@@ -25,3 +25,6 @@ Input::~Input()
 {
 }
 
+const bool Input::isEndOfFile(){
+	return in_.eof();
+};

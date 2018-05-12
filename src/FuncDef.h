@@ -25,7 +25,7 @@ namespace Guarduaux {
 		}
 
 		BlockStatement& getFuncBlock(){
-
+			return funcBlock_;
 		}
 
 		unsigned int paramCount(){

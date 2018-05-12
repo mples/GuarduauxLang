@@ -7,6 +7,7 @@ public:
 	char currentChar() const;
 	char getNextChar();
 	char peekNextChar();
+	const bool isEndOfFile();
 
 	Input(std::istream& in);
 	~Input();

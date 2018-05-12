@@ -11,12 +11,18 @@ namespace Guarduaux {
 
 	class MultipExpression : public Expresion {
 	public:
-		MultipExpression();
+		MultipExpression(ExprPtr simpl_assnb_expr){
 
-		Variable calculate() override;
+		}
+
+		Variable calculate() override{
+
+		}
 
 
-		void addSimpleAssignExpr(ExprPtr add_expr, TokenType ret_op = TokenType::UNIDENTIFIED);
+		void addSimpleAssignExpr(ExprPtr add_expr, TokenType ret_op = TokenType::UNIDENTIFIED){
+
+		}
 
 	private:
 		std::list<ExprPtr> multipExprList_;

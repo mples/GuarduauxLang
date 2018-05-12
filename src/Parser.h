@@ -53,7 +53,7 @@ namespace Guarduaux {
 		StatemPtr ifStatemParse();
 		StatemPtr funcCallParse(Token token);
 		StatemPtr perioFuncCallParse(Token token, StatemPtr func_call);
-		StatemPtr loopStatemParse();
+		StatemPtr loopStatemParse(Token loop_token);
 
 		StatemPtr assignOrGraphicStatemParse(Token token);
 		StatemPtr assignStatemParse(Token token, ExprPtr index);
@@ -68,6 +68,7 @@ namespace Guarduaux {
 		ExprPtr simplLogicExprParse();
 
 		ExprPtr assignableExprParse();
+		ExprPtr simplAssnbleExprParse();
 		ExprPtr multpExprParse();
 	};
 

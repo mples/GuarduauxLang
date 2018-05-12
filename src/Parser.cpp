@@ -22,6 +22,7 @@
 #include "SimpleLogicExpression.h"
 #include "AssignableExpression.h"
 #include "SimpleAssnblExpression.h"
+#include "MultipExpression.h"
 #include "GraphFunc.h"
 
 using namespace Guarduaux;
@@ -58,7 +59,8 @@ void Parser::parse()
 
 void Parser::parseProgram()
 {
-	while (lexer_->currentToken().type_ != Type::END_OF_FILE) {
+	while (lexer_->currentToken().type_ != Type::END_OF_FILE  ) {
+
 		if (isAcceptable(Type::FUNC)) {
 			funcDefParse();
 		}
@@ -125,6 +127,7 @@ void Parser::blockStateParse(BlockStatement & block)
 	std::unordered_map<TokenType, std::function<void()> > statementsList = {
 		{TokenType::IDENTIFIER,		[&]() {
 				block.addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
+				isAcceptableOrThrow(Type::SEMICOLON);
 			} 
 		},
 			
@@ -133,16 +136,16 @@ void Parser::blockStateParse(BlockStatement & block)
 			}
 		},
 		{ TokenType::FOR,		[&]() {
-			block.addInstr(std::move(loopStatemParse()));
+			block.addInstr(std::move(loopStatemParse(pars_tok)));
 		}
 		},
 		{ TokenType::FOR_EAC,		[&]() {
-			block.addInstr(std::move(loopStatemParse()));
+			block.addInstr(std::move(loopStatemParse(pars_tok)));
 		}
 		}
 	};
 
-	while (!isAcceptable(Type::SQR_BR_CL)) {
+	while (!isAcceptable(Type::CUR_BR_CL)) {
 		pars_tok = lexer_->currentToken();
 		lexer_->getToken();
 
@@ -153,6 +156,7 @@ void Parser::blockStateParse(BlockStatement & block)
 			throw WrongTokenException(pars_tok, { Type::IDENTIFIER, Type::IF, Type::FOR, Type::FOR_EAC, Type::RET });
 		}
 	}
+	//lexer_->getToken();
 }
 
 StatemPtr Parser::funcCallOrAssinStatemOrInitStatemParse(Token token)
@@ -168,7 +172,6 @@ StatemPtr Parser::funcCallOrAssinStatemOrInitStatemParse(Token token)
 	else {
 		ret_statem = std::move(assignOrGraphicStatemParse(token) );
 	}
-	isAcceptableOrThrow(Type::SEMICOLON);
 
 	return ret_statem;
 
@@ -234,7 +237,7 @@ StatemPtr Parser::perioFuncCallParse(Token token, StatemPtr func_call)
 	return std::make_unique<PeriodicFuncCall>( std::move(func_call) , std::move( expr) );
 }
 
-StatemPtr Parser::loopStatemParse()
+StatemPtr Parser::loopStatemParse(Token loop_token)
 {
 	Token tok = lexer_->currentToken();
 	ExprPtr logic_expr;
@@ -242,18 +245,26 @@ StatemPtr Parser::loopStatemParse()
 	StatemPtr loop_instr;
 	BlockPtr loop_block;
 
-	if (tok.type_ == Type::FOR) {
+	if (loop_token.type_ == Type::FOR) {
 		isAcceptableOrThrow(Type::RND_BR_OP);
-		isAcceptableOrThrow(Type::IDENTIFIER, [&]() {
-					init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken())); });
-		
+
+		if(isAcceptable(Type::IDENTIFIER) ) {
+			init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken()));
+		}
+		else {
+			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
+		}
 		isAcceptableOrThrow(Type::SEMICOLON);
 		logic_expr = std::move( logicExprParse() );
 
 		isAcceptableOrThrow(Type::SEMICOLON);
-		isAcceptableOrThrow(Type::IDENTIFIER, [&]() {
-					loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken())); });
 
+		if(isAcceptable(Type::IDENTIFIER) ) {
+			loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken()));
+		}
+		else {
+			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
+		}
 		isAcceptableOrThrow(Type::RND_BR_CL);
 
 		isAcceptableOrThrow(Type::CUR_BR_OP);
@@ -263,15 +274,29 @@ StatemPtr Parser::loopStatemParse()
 		std::unique_ptr<ForStatement> for_statem = std::make_unique<ForStatement>(std::move(logic_expr),std::move(loop_block), std::move(init_instr), std::move(loop_instr));
 		return std::move(for_statem);
 	}
-	else if (tok.type_ == Type::FOR_EAC) {
+	else if (loop_token.type_ == Type::FOR_EAC) {
 		std::string coll;
 		std::string iter;
 
-		isAcceptableOrThrow(Type::IDENTIFIER, [&]() { coll = lexer_->getToken().value_; });
+		//isAcceptableOrThrow(Type::IDENTIFIER, [&]() { coll = lexer_->getToken().value_; });
+
+		if(isAcceptable(Type::IDENTIFIER) ) {
+			coll = lexer_->currentToken().value_;
+		}
+		else {
+			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
+		}
 
 		isAcceptableOrThrow(Type::COLON);
 
-		isAcceptableOrThrow(Type::IDENTIFIER, [&]() { iter = lexer_->getToken().value_; });
+		//isAcceptableOrThrow(Type::IDENTIFIER, [&]() { iter = lexer_->getToken().value_; });
+
+		if(isAcceptable(Type::IDENTIFIER) ) {
+			iter = lexer_->currentToken().value_;
+		}
+		else {
+			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
+		}
 
 		isAcceptableOrThrow(Type::CUR_BR_OP);
 		loop_block = std::make_unique<BlockStatement>(block_);
@@ -288,6 +313,7 @@ StatemPtr Parser::assignOrGraphicStatemParse(Token token)
 	StatemPtr ret_state;
 	ExprPtr index_expr;
 	ExprPtr expr;
+	Token graph_ident = lexer_->currentToken();
 
 	if (isAcceptable(Type::SQR_BR_OP)) {
 		index_expr = std::move(logicExprParse());
@@ -297,16 +323,18 @@ StatemPtr Parser::assignOrGraphicStatemParse(Token token)
 	if (isAcceptable(Type::ASN)) {
 		ret_state = std::move(assignStatemParse(token, std::move(index_expr )));
 	}
-	else if (isAcceptable(Type::SEMICOLON)) {
+	else if (isAcceptable(Type::DRAW) || isAcceptable(Type::MOVE) || isAcceptable(Type::SCALE) || isAcceptable(Type::CHNGCOL)){
+		ret_state = std::move(graphicStatemParse(graph_ident, std::move(index_expr)) );
+	}
+	else
+	{
 		if (!block_->isValidVar(token.value_)) {
 			block_->addVar(token.value_, std::move(index_expr));
+			return ret_state;
 		}
 		else {
 			throw Exception("Variable already exist");
 		}
-	}
-	else {
-		ret_state = std::move(graphicStatemParse(token, std::move(index_expr)) );
 	}
 	return ret_state;
 }
@@ -319,8 +347,6 @@ StatemPtr Parser::assignStatemParse(Token token, ExprPtr index)
 		block_->addVar(token.value_, std::move( index) );
 	}
 
-	isAcceptableOrThrow(Type::SEMICOLON);
-
 	std::unique_ptr<AssignStatement> assign_statem = std::make_unique<AssignStatement>(block_->findVar(token.value_), std::move(expr_assign), std::move(index ) );
 	return std::move(assign_statem);
 }
@@ -329,12 +355,13 @@ StatemPtr Parser::graphicStatemParse(Token token, ExprPtr index)
 {
 	StatemPtr graph_func;
 
-	if(isAcceptable(Type::DRAW)) {
+	if(token.type_ == Type::DRAW) {
 		graph_func = std::move(drawFuncParse(token, std::move(index)));
 	}
-	else {
+	else if(token.type_ == Type::SCALE || token.type_ == Type::CHNGCOL || token.type_ == Type::MOVE){
 		graph_func = std::move(otherGrpahFunParse(token, std::move(index)));
 	}
+
 	return graph_func;
 }
 
@@ -348,36 +375,50 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
 	graph_func = std::make_unique<GraphFunc>(func_type);
-	for (int i = 0; i < 3; ++i) {
-		graph_func->addParam(std::move(logicExprParse()));
+	graph_func->addParam(std::move(logicExprParse()));
 
-		isAcceptableOrThrow(Type::COMMA);
-	}
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
 
 	isAcceptableOrThrow(Type::COL);
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
-	for (int i = 0; i < 3; ++i) {
-		graph_func->addParam(std::move(logicExprParse()));
+	graph_func->addParam(std::move(logicExprParse()));
 
-		isAcceptableOrThrow(Type::COMMA);
-	}
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
 
 	isAcceptableOrThrow(Type::DIM);
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
-	for (int i = 0; i < 3; ++i) {
-		graph_func->addParam(std::move(logicExprParse()));
+	graph_func->addParam(std::move(logicExprParse()));
 
-		isAcceptableOrThrow(Type::COMMA);
-	}
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	graph_func->addParam(std::move(logicExprParse()));
+
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
-	isAcceptableOrThrow(Type::SEMICOLON);
 
 	return graph_func;
 }
@@ -385,18 +426,25 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 StatemPtr Parser::otherGrpahFunParse(Token token, ExprPtr index)
 {
 	std::unique_ptr<GraphFunc> graph_func;
-	if (isAcceptable(Type::SCALE) || isAcceptable(Type::MOVE) || isAcceptable(Type::CHNGCOL)) {
+	if ( token.type_ == Type::SCALE || token.type_ == Type::MOVE || token.type_ == Type::CHNGCOL) {
 		std::string func_type = lexer_->currentToken().value_;
 		isAcceptableOrThrow(Type::RND_BR_OP);
 
 		graph_func = std::make_unique<GraphFunc>(func_type);
-		for (int i = 0; i < 3; ++i) {
-			graph_func->addParam(std::move(logicExprParse()));
 
-			isAcceptableOrThrow(Type::COMMA);
-		}
+		graph_func->addParam(std::move(logicExprParse()));
+
+		isAcceptableOrThrow(Type::COMMA);
+
+		graph_func->addParam(std::move(logicExprParse()));
+
+		isAcceptableOrThrow(Type::COMMA);
+
+		graph_func->addParam(std::move(logicExprParse()));
+
+
 		isAcceptableOrThrow(Type::RND_BR_CL);
-		isAcceptableOrThrow(Type::SEMICOLON);
+
 	}
 	return graph_func;
 }
@@ -458,11 +506,21 @@ ExprPtr Parser::assignableExprParse()
 
 ExprPtr Parser::multpExprParse()
 {
-	std::unique_ptr<SimpleAssnblExpression> simple_assnable_expr;
+	std::unique_ptr<MultipExpression> assnable_expr = std::make_unique<MultipExpression>(std::move(simplAssnbleExprParse()));
+
+	while (isAcceptable(Type::MUL_OP) || isAcceptable (Type::DIV_OP) ){
+		assnable_expr->addSimpleAssignExpr(std::move(simplAssnbleExprParse()), lexer_->currentToken().type_);
+	}
+	return std::move(assnable_expr);
+
+}
+
+ExprPtr Parser::simplAssnbleExprParse() {
+	std::unique_ptr<Expresion> simple_assnable_expr;
 
 	if (isAcceptable(Type::NUMBER)) {
-		auto var = std::make_unique<Variable>(lexer_->currentToken());
-		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(std::move(var));
+
+		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(new Variable(lexer_->currentToken() ));
 		//TODO fix this
 	}
 	else if (isAcceptable(Type::IDENTIFIER)) {
@@ -477,14 +535,14 @@ ExprPtr Parser::multpExprParse()
 				isAcceptableOrThrow(Type::SQR_BR_CL);
 			}
 			else {
-				
-				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(std::make_unique<Variable>(lexer_->currentToken()));
+
+				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(block_->findVar(ident.value_));
 			}
 		}
 	}
 	else {
 		throw WrongTokenException(lexer_->currentToken(), { Type::IDENTIFIER, Type::NUMBER });
 	}
-
+	return simple_assnable_expr;
 }
 

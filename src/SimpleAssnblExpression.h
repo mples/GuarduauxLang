@@ -18,7 +18,11 @@ namespace Guarduaux {
 
 		}
 
-		SimpleAssnblExpression(std::unique_ptr<Variable> var) {
+		SimpleAssnblExpression(Variable* var) {
+
+		}
+
+		SimpleAssnblExpression(Variable& var) {
 
 		}
 
@@ -28,7 +32,7 @@ namespace Guarduaux {
 
 	private:
 		StatemPtr funcCall_;
-		Variable var_;
+		Variable* var_;
 	};
 }
 

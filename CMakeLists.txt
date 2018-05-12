@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(src)
 
 add_executable(Guarduaux_Lang
+        include/catch.hpp
+        tests/lexer_test.cpp
+        tests/parser_tests.cpp
         src/AddExpression.h
         src/AssignableExpression.h
         src/AssignStatement.h
@@ -23,7 +26,7 @@ add_executable(Guarduaux_Lang
         src/Lexer.cpp
         src/Lexer.h
         src/LogicExpression.h
-        src/main.cpp
+        #src/main.cpp
         src/MultipExpression.h
         src/Parser.cpp
         src/Parser.h

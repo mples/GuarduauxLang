@@ -45,8 +45,10 @@ Token Guarduaux::Lexer::getToken() {
 
 	ignoreWhiteSpace();
 	Position temp_pos = pos_;
-
-	if ( ( ret_tok = tryIdentifier() ).isVaild()) {}
+	if(input_.isEndOfFile()){
+		ret_tok = TokenType ::END_OF_FILE;
+	}
+	else if ( ( ret_tok = tryIdentifier() ).isVaild()) {}
 	else if ( (ret_tok = tryNumber() ).isVaild()) {}
 	else if ((ret_tok = tryOperator()).isVaild()) {}
 	else if ((ret_tok = trySpecialSign()).isVaild()) {}
