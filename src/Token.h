@@ -11,6 +11,15 @@ namespace Guarduaux {
 
 		int line_;
 		int column_;
+
+		std::string toString(){
+			std::string pos_str;
+			pos_str += "line: ";
+			pos_str += line_;
+			pos_str += " column: ";
+			pos_str += column_;
+			return pos_str;
+		}
 	};
 
 	struct Token {
@@ -31,13 +40,12 @@ namespace Guarduaux {
 			pos_.line_ = line;
 			pos_.column_ = column;
 		}
-		std::string getPos() const {
-			std::string pos_str;
-			pos_str += "line: ";
-			pos_str += pos_.line_;
-			pos_str += " column: ";
-			pos_str += pos_.column_;
-			return pos_str;
+		Position& getPos() {
+			return pos_;
+		}
+
+		Position& getPos() const {
+			return const_cast<Position&>(pos_ );
 		}
 
 		bool isVaild() const {

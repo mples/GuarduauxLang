@@ -11,8 +11,8 @@ namespace Guarduaux {
 		Lexer(Input inp);
 		~Lexer();
 
-		Token getToken();
-		Token currentToken() const;
+		Token & getToken();
+		Token & currentToken();
 
 	private:
 		Input input_;
@@ -26,36 +26,24 @@ namespace Guarduaux {
 		void cacheNextChar();
 
 
-		Token tryIdentifier();
-		Token tryKeyword();
+		void tryIdentifier();
+		void tryKeyword();
 
-		Token tryFunc();
-		Token tryReturn();
-		Token tryIf();
-		Token tryElse();
-		Token tryFor();
-		Token tryForEach();
-		Token tryDraw();
-		Token tryScale();
-		Token tryMove();
-		Token tryChngCol();
-		Token tryDim();
-		Token tryPos();
-		Token tryCol();
-		Token tryBox();
-		Token trySphere();
+		void tryNumber();
+		void tryOperator();
 
-		Token tryNumber();
-		Token tryOperator();
+		void tryPeriodicalOp();
+		void tryEqualOp();
 
-		Token tryPeriodicalOp();
-		Token tryEqualOp();
-		Token tryMultiOp();
-		Token tryAddtvOp();
-		Token tryRelatOp();
-		Token tryLogicOp();
+        void tryMultiOp();
 
-		Token trySpecialSign();
+        void tryAddtvOp();
+
+        void tryRelatOp();
+
+        void tryLogicOp();
+
+        void trySpecialSign();
 
 	};
 }

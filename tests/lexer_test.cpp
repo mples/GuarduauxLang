@@ -33,7 +33,7 @@ TEST_CASE("lexer_tests"){
         Token token = Token::unidentifiedType();
         Lexer lexer(iss);
 
-        iss.str("ident ident_  _id_ 1id _");
+        iss.str("ident ident_  _id_ id1_{}");
 
         token = lexer.getToken();
         REQUIRE(token.type_ == Type::IDENTIFIER);
@@ -48,12 +48,15 @@ TEST_CASE("lexer_tests"){
         REQUIRE(token.value_ == "_id_");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NUMBER);
-        REQUIRE(token.value_ == "1");
+        REQUIRE(token.type_ == Type::IDENTIFIER);
+        REQUIRE(token.value_ == "id1_");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::IDENTIFIER);
-        REQUIRE(token.value_ == "id");
+        REQUIRE(token.type_ == Type::CUR_BR_OP);
+        REQUIRE(token.value_ == "{");
+        token = lexer.getToken();
+        REQUIRE(token.type_ == Type::CUR_BR_CL);
+        REQUIRE(token.value_ == "}");
 
     }
 
@@ -66,7 +69,7 @@ TEST_CASE("lexer_tests"){
         Token token = Token::unidentifiedType();
         Lexer lexer(iss);
 
-        iss.str("113 234 3 4 0 -0 -4 -66 -34 003   -00007");
+        iss.str("113 234 3 4 0 0 4 66 34 003   00007");
 
         token = lexer.getToken();
         REQUIRE(token.type_ == Type::NUMBER);
@@ -89,28 +92,28 @@ TEST_CASE("lexer_tests"){
         REQUIRE(token.value_ == "0");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NEG_NUMBER);
-        REQUIRE(token.value_ == "-0");
+        REQUIRE(token.type_ == Type::NUMBER);
+        REQUIRE(token.value_ == "0");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NEG_NUMBER);
-        REQUIRE(token.value_ == "-4");
+        REQUIRE(token.type_ == Type::NUMBER);
+        REQUIRE(token.value_ == "4");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NEG_NUMBER);
-        REQUIRE(token.value_ == "-66");
+        REQUIRE(token.type_ == Type::NUMBER);
+        REQUIRE(token.value_ == "66");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NEG_NUMBER);
-        REQUIRE(token.value_ == "-34");
+        REQUIRE(token.type_ == Type::NUMBER);
+        REQUIRE(token.value_ == "34");
 
         token = lexer.getToken();
         REQUIRE(token.type_ == Type::NUMBER);
         REQUIRE(token.value_ == "003");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::NEG_NUMBER);
-        REQUIRE(token.value_ == "-00007");
+        REQUIRE(token.type_ == Type::NUMBER);
+        REQUIRE(token.value_ == "00007");
     }
 
     SECTION("keywords_are_scanned")

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cctype>
 #include <stdexcept>
+#include <unordered_map>
 
 using Type = Guarduaux::TokenType;
 using namespace Guarduaux;
@@ -40,41 +41,61 @@ void Guarduaux::Lexer::cacheNextChar() {
 	processNextChar();
 }
 
-Token Guarduaux::Lexer::getToken() {
-	Token ret_tok = Token::unidentifiedType();
+Token & Guarduaux::Lexer::getToken() {
+	currentToken_ = Token::unidentifiedType();
 
 	ignoreWhiteSpace();
-	Position temp_pos = pos_;
+	currentToken_.setPos( pos_ );
+
 	if(input_.isEndOfFile()){
-		ret_tok = TokenType ::END_OF_FILE;
+		currentToken_ = TokenType ::END_OF_FILE;
 	}
-	else if ( ( ret_tok = tryIdentifier() ).isVaild()) {}
-	else if ( (ret_tok = tryNumber() ).isVaild()) {}
-	else if ((ret_tok = tryOperator()).isVaild()) {}
-	else if ((ret_tok = trySpecialSign()).isVaild()) {}
+
+	tryIdentifier();
+	if ( currentToken_.isVaild()) {
+		buffer_.clear();
+		return currentToken_;
+	}
+
+	tryNumber();
+	if ( currentToken_.isVaild()) {
+		buffer_.clear();
+		return currentToken_;
+	}
+
+	tryOperator();
+	if ( currentToken_.isVaild()) {
+		buffer_.clear();
+		return currentToken_;
+	}
+
+	trySpecialSign();
+	if ( currentToken_.isVaild()) {
+		buffer_.clear();
+		return currentToken_;
+	}
 	else {
 		cacheNextChar();
-		ret_tok.value_ = buffer_;
+		currentToken_.value_ = buffer_;
 	}
 
-	ret_tok.setPos(temp_pos);
 	buffer_.clear();
-	return currentToken_ = ret_tok;
+	return currentToken_ ;
 }
 
-Token Guarduaux::Lexer::currentToken() const
+Token & Guarduaux::Lexer::currentToken()
 {
 	return currentToken_;
 }
 
-Token Guarduaux::Lexer::tryIdentifier() {
+void Guarduaux::Lexer::tryIdentifier() {
 	Token ret_tok = Token::unidentifiedType();
 
 	if (std::isalpha(lastch_) || lastch_ == '_') {
 		int length = 1;
 		cacheNextChar();
 
-		while (std::isalpha(lastch_) || lastch_ == '_') {
+		while (std::isalnum(lastch_) || lastch_ == '_') {
 			cacheNextChar();
 
 			if (++length > IDENTIFIER_MAX_LENGTH) {
@@ -83,329 +104,135 @@ Token Guarduaux::Lexer::tryIdentifier() {
 		}
 	}
 	else {
-		return ret_tok; // identifier not found 
+		return; // identifier not found
+	}
+	tryKeyword();
+	if (currentToken_.isVaild()) {
+		return;
 	}
 
-	if ((ret_tok = tryKeyword()).isVaild()) {
-		return ret_tok;
-	}
-
-	ret_tok.type_ = Type::IDENTIFIER;
-	ret_tok.value_ = buffer_;
-
-	return ret_tok;
+	currentToken_.type_ = Type::IDENTIFIER;
+	currentToken_.value_ = buffer_;
 }
 
-Token Guarduaux::Lexer::tryKeyword() {
-	Token ret_tok = Token::unidentifiedType();
-	
-	if ( (ret_tok = tryFunc()).isVaild() ) {
-		return ret_tok;
+void Guarduaux::Lexer::tryKeyword() {
+	static const std::unordered_map<std::string, TokenType> &keyword_types = {
+			{ "func", TokenType ::FUNC },
+			{ "return", TokenType ::RET },
+			{"if", TokenType::IF },
+			{ "else", TokenType::ELSE },
+			{"for", TokenType::FOR },
+			{"for_each", TokenType::FOR_EAC },
+			{"draw", TokenType::DRAW },
+			{"scale", TokenType::SCALE },
+			{"move", TokenType::MOVE },
+			{"chngcol", TokenType::CHNGCOL },
+			{"box", TokenType::BOX },
+			{"sphere", TokenType::SPHERE },
+			{"dim", TokenType::DIM },
+			{"col", TokenType::COL },
+			{"pos", TokenType::POS }
+	};
+	auto type = keyword_types.find(buffer_);
+	if( type != keyword_types.end()){
+		currentToken_.type_ = type -> second;
+		currentToken_.value_ = type ->first;
 	}
 
-	if ((ret_tok = tryReturn()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryIf()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryElse()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryFor()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryForEach()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryDraw()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryScale()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryMove()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryChngCol()).isVaild()) {
-		return ret_tok;
-	}
-	
-	if ((ret_tok = tryBox()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = trySphere()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryDim()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryPos()).isVaild()) {
-		return ret_tok;
-	}
-
-	if ((ret_tok = tryCol()).isVaild()) {
-		return ret_tok;
-	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryFunc() {
-	Token ret_tok = Token::unidentifiedType();
-	
-	if (buffer_ == "func") {
-		ret_tok.type_ = Type::FUNC;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
 
-Token Guarduaux::Lexer::tryReturn() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryNumber() {
 
-	if (buffer_ == "return") {
-		ret_tok.type_ = Type::RET;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryIf() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "if") {
-		ret_tok.type_ = Type::IF;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryElse() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "else") {
-		ret_tok.type_ = Type::ELSE;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryFor() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "for") {
-		ret_tok.type_ = Type::FOR;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryForEach() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "for_each") {
-		ret_tok.type_ = Type::FOR_EAC;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryDraw() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "draw") {
-		ret_tok.type_ = Type::DRAW;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryScale() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "scale") {
-		ret_tok.type_ = Type::SCALE;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryMove() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "move") {
-		ret_tok.type_ = Type::MOVE;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryChngCol() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "chngcol") {
-		ret_tok.type_ = Type::CHNGCOL;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryBox() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "box") {
-		ret_tok.type_ = Type::BOX;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::trySphere() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "sphere") {
-		ret_tok.type_ = Type::SPHERE;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryDim() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "dim") {
-		ret_tok.type_ = Type::DIM;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryCol() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "col") {
-		ret_tok.type_ = Type::COL;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryPos() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (buffer_ == "pos") {
-		ret_tok.type_ = Type::POS;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
-}
-
-Token Guarduaux::Lexer::tryNumber() {
-	Token ret_tok = Token::unidentifiedType();
-
-	if (lastch_ == '-') {
-		char peek_char = input_.peekNextChar();
-
-		if (std::isdigit(peek_char) ){
-			cacheNextChar();
-
-			while (std::isdigit(lastch_)){
-				cacheNextChar();
-			}
-
-			ret_tok.type_ = Type::NEG_NUMBER;
-			ret_tok.value_ = buffer_;
-		}
-	}
-	else if (std::isdigit(lastch_)) {
+	if (std::isdigit(lastch_)) {
 		cacheNextChar();
 
 		while (std::isdigit(lastch_)) {
 			cacheNextChar();
 		}
 
-		ret_tok.type_ = Type::NUMBER;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::NUMBER;
+		currentToken_.value_ = buffer_;
 	}
 
-	return ret_tok;
-	
-
 }
 
-Token Guarduaux::Lexer::tryOperator() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryOperator() {
 
-	if ((ret_tok = tryPeriodicalOp()).isVaild()) {}
-	else if ((ret_tok = tryMultiOp()).isVaild()) {}
-	else if ((ret_tok = tryAddtvOp()).isVaild()) {}
-	else if ((ret_tok = tryEqualOp()).isVaild()) {}
-	else if ((ret_tok = tryLogicOp()).isVaild()) {}
-	else if ((ret_tok = tryRelatOp()).isVaild()) {}
-	return ret_tok;
+	tryPeriodicalOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
+
+	tryMultiOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
+
+	tryAddtvOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
+
+	tryEqualOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
+
+	tryLogicOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
+
+	tryRelatOp();
+	if (currentToken_.isVaild()) {
+		return;
+	}
 }
 
-Token Guarduaux::Lexer::tryPeriodicalOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryPeriodicalOp() {
 
 	if (lastch_ == '~') {
 		cacheNextChar();
 
-		ret_tok.type_ = Type::PERIODIC_OP;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::PERIODIC_OP;
+		currentToken_.value_ = '~';
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryMultiOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryMultiOp() {
 
 	if (lastch_ == '*') {
 		cacheNextChar();
 
-		ret_tok.type_ = Type::MUL_OP;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::MUL_OP;
+		currentToken_.value_ = '*';
 	} 
 	else if (lastch_ == '/') {
 		cacheNextChar();
 
-		ret_tok.type_ = Type::DIV_OP;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::DIV_OP;
+		currentToken_.value_ = '/';
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryAddtvOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryAddtvOp() {
 
 	if (lastch_ == '+') {
 		cacheNextChar();
 
-		ret_tok.type_ = Type::ADD_OP;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::ADD_OP;
+		currentToken_.value_ = '+';
 	}
 	else if (lastch_ == '-') {
 		cacheNextChar();
 
-		ret_tok.type_ = Type::SUB_OP;
-		ret_tok.value_ = buffer_;
+		currentToken_.type_ = Type::SUB_OP;
+		currentToken_.value_ = '-';
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryEqualOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryEqualOp() {
 
 	if (lastch_ == '!') {
 		char peek_char = input_.peekNextChar();
@@ -414,14 +241,14 @@ Token Guarduaux::Lexer::tryEqualOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::NEQ_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::NEQ_OP;
+			currentToken_.value_ = "!=";
 		}
 		else {
 			cacheNextChar();
 
-			ret_tok.type_ = Type::NEG;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::NEG;
+			currentToken_.value_ = "!";
 		}
 	}
 	else if (lastch_ == '=') {
@@ -431,21 +258,19 @@ Token Guarduaux::Lexer::tryEqualOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::EQU_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::EQU_OP;
+			currentToken_.value_ = "==";
 		}
 		else {
 			cacheNextChar();
 
-			ret_tok.type_ = Type::ASN;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::ASN;
+			currentToken_.value_ = '=';
 		}
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryLogicOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryLogicOp() {
 
 	if (lastch_ == '&') {
 		char peek_char = input_.peekNextChar();
@@ -454,8 +279,8 @@ Token Guarduaux::Lexer::tryLogicOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::AND_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::AND_OP;
+			currentToken_.value_ = "&&";
 		}
 		
 	}
@@ -466,16 +291,14 @@ Token Guarduaux::Lexer::tryLogicOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::OR_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::OR_OP;
+			currentToken_.value_ = "||";
 		}
 		
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::tryRelatOp() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::tryRelatOp() {
 
 	if (lastch_ == '>') {
 		char peek_char = input_.peekNextChar();
@@ -484,14 +307,14 @@ Token Guarduaux::Lexer::tryRelatOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::GOE_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::GOE_OP;
+			currentToken_.value_ = ">=";
 		}
 		else {
 			cacheNextChar();
 
-			ret_tok.type_ = Type::GTH_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::GTH_OP;
+			currentToken_.value_ = ">";
 		}
 	}
 	else if (lastch_ == '<') {
@@ -501,81 +324,37 @@ Token Guarduaux::Lexer::tryRelatOp() {
 			cacheNextChar();
 			cacheNextChar();
 
-			ret_tok.type_ = Type::LOE_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::LOE_OP;
+			currentToken_.value_ = "<=";
 		}
 		else {
 			cacheNextChar();
 
-			ret_tok.type_ = Type::LTH_OP;
-			ret_tok.value_ = buffer_;
+			currentToken_.type_ = Type::LTH_OP;
+			currentToken_.value_ = "<";
 		}
 	}
-	return ret_tok;
 }
 
-Token Guarduaux::Lexer::trySpecialSign() {
-	Token ret_tok = Token::unidentifiedType();
+void Guarduaux::Lexer::trySpecialSign() {
 
-	if (lastch_ == '{') {
+	static const std::unordered_map<char , TokenType> &special_sing_types = {
+			{'{', TokenType::CUR_BR_OP},
+			{'}', TokenType::CUR_BR_CL},
+			{'[', TokenType::SQR_BR_OP },
+			{']', TokenType::SQR_BR_CL },
+			{'(', TokenType::RND_BR_OP },
+			{')', TokenType::RND_BR_CL },
+			{',', TokenType::COMMA },
+			{'.', TokenType::DOT },
+			{':', TokenType::COLON },
+			{';', TokenType::SEMICOLON }
+	};
+
+	auto type = special_sing_types.find(lastch_);
+	if(type != special_sing_types.end()){
+		currentToken_.type_ = type->second;
+		currentToken_.value_ = type->first;
 		cacheNextChar();
-
-		ret_tok.type_ = Type::CUR_BR_OP;
-		ret_tok.value_ = buffer_;
 	}
-	else if (lastch_ == '}') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::CUR_BR_CL;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == '[') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::SQR_BR_OP;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == ']') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::SQR_BR_CL;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == '(') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::RND_BR_OP;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == ')') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::RND_BR_CL;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == ',') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::COMMA;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == '.') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::DOT;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == ':') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::COLON;
-		ret_tok.value_ = buffer_;
-	}
-	else if (lastch_ == ';') {
-		cacheNextChar();
-
-		ret_tok.type_ = Type::SEMICOLON;
-		ret_tok.value_ = buffer_;
-	}
-	return ret_tok;
 }
