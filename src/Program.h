@@ -23,7 +23,9 @@ namespace Guarduaux {
 			return *functions.at(fun_name);
 		}
 
-		Return run();
+		Return run(){
+
+		}
 
 	private:
 		std::unordered_map<std::string, std::unique_ptr<FuncDef> > functions;

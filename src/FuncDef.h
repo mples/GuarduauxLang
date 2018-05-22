@@ -5,16 +5,18 @@
 #include "BlockStatement.h"
 
 namespace Guarduaux {
+
+    using BlockPtr = std::unique_ptr<Guarduaux::BlockStatement>;
+
 	class FuncDef {
 	public:
 
-		FuncDef() {
+		FuncDef() {}
 
-		}
 
-		FuncDef(std::string func_name) : identifier_(func_name) {
 
-		}
+		FuncDef( std::string &identi,  std::vector<std::string> &param, BlockPtr func)
+				 {}
 
 		void addParameter(const std::string &identifier){
 
@@ -24,9 +26,7 @@ namespace Guarduaux {
 
 		}
 
-		BlockStatement& getFuncBlock(){
-			return funcBlock_;
-		}
+
 
 		unsigned int paramCount(){
 
@@ -36,9 +36,9 @@ namespace Guarduaux {
 
 		}
 	private:
-		const std::string identifier_;
-		std::list<std::string> parameters_;
-		BlockStatement funcBlock_;
+		std::string identifier_;
+		std::vector<std::string> parameters_;
+		BlockPtr funcBlock_;
 
 	};
 }

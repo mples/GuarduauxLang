@@ -15,6 +15,7 @@ namespace Guarduaux {
 
 	using StatemPtr = std::unique_ptr<Statement>;
 	using ExprPtr = std::unique_ptr<Expresion>;
+    using BlockPtr = std::unique_ptr<Guarduaux::BlockStatement>;
 	using Type = TokenType;
 
 	class Parser
@@ -37,7 +38,7 @@ namespace Guarduaux {
 
 		Program prog_;
 
-		BlockStatement* block_;
+		BlockStatement* currParseBlock_;
 
 		void parseProgram();
 
@@ -45,9 +46,9 @@ namespace Guarduaux {
 
 		void isAcceptableOrThrow(Type type, std::function<void()> func = std::function<void()>());
 
-		void funcDefParse();
-		void parametersParse(FuncDef& func);
-		void blockStateParse(BlockStatement& block);
+        std::unique_ptr<FuncDef> funcDefParse();
+		std::vector<std::string> parametersParse();
+		BlockPtr blockStateParse();
 
 		StatemPtr funcCallOrAssinStatemOrInitStatemParse(Token token);
 		StatemPtr ifStatemParse();

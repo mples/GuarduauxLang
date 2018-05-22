@@ -30,7 +30,7 @@ namespace Guarduaux {
 				exp_tokens.append(TokenTypeTable::getName(t));
 				exp_tokens.append(" ");
 			}
-			exp_tokens += " at line " + token.getPos();
+			exp_tokens += " at line " + token.getPos().toString();
 			Exception(std::string(exp_tokens));
 			
 		}

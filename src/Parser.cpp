@@ -62,7 +62,7 @@ void Parser::parseProgram()
 	while (lexer_->currentToken().type_ != Type::END_OF_FILE  ) {
 
 		if (isAcceptable(Type::FUNC)) {
-			funcDefParse();
+			prog_.addFunc(std::move(funcDefParse()));
 		}
 		else {
 			throw WrongTokenException(lexer_->currentToken(), { TokenType::FUNC, TokenType::END_OF_FILE });
@@ -91,56 +91,62 @@ void Parser::isAcceptableOrThrow(Type type, std::function<void()> func)
 	}
 }
 
-void Parser::funcDefParse()
+std::unique_ptr<FuncDef> Parser::funcDefParse()
 {
 	std::unique_ptr<FuncDef> func;
 	
-	isAcceptableOrThrow(TokenType::IDENTIFIER, [&](){
-		func = std::make_unique<FuncDef>(lexer_->currentToken().value_);
-	}
-	);
-    func = std::make_unique<FuncDef>(lexer_->currentToken().value_);
+	isAcceptableOrThrow(TokenType::IDENTIFIER);
+    std::string func_name = lexer_->currentToken().value_;
+
 	isAcceptableOrThrow(TokenType::RND_BR_OP);
-	parametersParse(*func);
+	std::vector<std::string>param_vector = parametersParse();
+	isAcceptableOrThrow(TokenType::RND_BR_CL);
 
-	FuncDef* temp_func = func.get();
-	prog_.addFunc(std::move(func));
+	currParseBlock_ = nullptr;
+	BlockPtr block_statem = std::move(blockStateParse() );
 
-	isAcceptableOrThrow(TokenType::CUR_BR_OP);
-	blockStateParse(temp_func->getFuncBlock());
+
+	return std::move(std::make_unique<FuncDef>(func_name, param_vector, std::move(block_statem) ) );
 }
 
-void Parser::parametersParse(FuncDef& func)
+std::vector<std::string> Parser::parametersParse()
 {
-	if (isAcceptable(TokenType::IDENTIFIER, [&]() {func.addParameter(lexer_->currentToken().value_); })) {
-        func.addParameter(lexer_->currentToken().value_);
+	std::vector<std::string> param_vector;
+	if (isAcceptable(TokenType::IDENTIFIER )) {
+        param_vector.push_back(lexer_->currentToken().value_);
         while (isAcceptable(TokenType::COMMA) ){
-			isAcceptable(TokenType::IDENTIFIER, [&] {func.addParameter(lexer_->currentToken().value_); });
+			isAcceptable(TokenType::IDENTIFIER, [&] {param_vector.push_back(lexer_->currentToken().value_); });
 		}
 	}
-	isAcceptableOrThrow(TokenType::RND_BR_CL);
+
+	return param_vector;
 }
 
-void Parser::blockStateParse(BlockStatement & block)
+BlockPtr Parser::blockStateParse()
 {
+	isAcceptableOrThrow(TokenType::CUR_BR_OP);
+	BlockPtr curr_block = std::make_unique<BlockStatement>(currParseBlock_);
+	currParseBlock_ = curr_block.get();
+
 	Token pars_tok = Token::unidentifiedType();
-	std::unordered_map<TokenType, std::function<void()> > statementsList = {
+
+	std::unordered_map<TokenType, std::function<void()> > statements_list = {
 		{TokenType::IDENTIFIER,		[&]() {
-				block.addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
+			curr_block->addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
 				isAcceptableOrThrow(Type::SEMICOLON);
 			} 
 		},
 			
 		{ TokenType::IF,		[&]() {
-				block.addInstr(std::move(ifStatemParse() ));
+			curr_block->addInstr(std::move(ifStatemParse() ));
 			}
 		},
 		{ TokenType::FOR,		[&]() {
-			block.addInstr(std::move(loopStatemParse(pars_tok)));
+			curr_block->addInstr(std::move(loopStatemParse(pars_tok)));
 		}
 		},
 		{ TokenType::FOR_EAC,		[&]() {
-			block.addInstr(std::move(loopStatemParse(pars_tok)));
+			curr_block->addInstr(std::move(loopStatemParse(pars_tok)));
 		}
 		}
 	};
@@ -149,14 +155,15 @@ void Parser::blockStateParse(BlockStatement & block)
 		pars_tok = lexer_->currentToken();
 		lexer_->getToken();
 
-		if (statementsList.find(pars_tok.type_) != statementsList.end()) {
-			statementsList.at(pars_tok.type_)();
+		if (statements_list.find(pars_tok.type_) != statements_list.end()) {
+			statements_list.at(pars_tok.type_)();
 		}
 		else {
 			throw WrongTokenException(pars_tok, { Type::IDENTIFIER, Type::IF, Type::FOR, Type::FOR_EAC, Type::RET });
 		}
 	}
-	//lexer_->getToken();
+
+	return std::move(curr_block);
 }
 
 StatemPtr Parser::funcCallOrAssinStatemOrInitStatemParse(Token token)
@@ -188,14 +195,10 @@ StatemPtr Parser::ifStatemParse()
 	condit_expr = std::move(logicExprParse());
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
-	isAcceptableOrThrow(Type::CUR_BR_OP);
-	if_block = std::make_unique<BlockStatement>(block_);
-	blockStateParse(*if_block);
+	if_block = blockStateParse();
 
 	if (isAcceptable(Type::ELSE)) {
-		isAcceptableOrThrow(Type::CUR_BR_OP);
-		else_block = std::make_unique<BlockStatement>(block_);
-		blockStateParse(*else_block);
+		else_block = blockStateParse();
 		return std::make_unique<IfStatement>(std::move(condit_expr), std::move(if_block), std::move(else_block));
 	}
 
@@ -220,7 +223,7 @@ StatemPtr Parser::funcCallParse(Token token)
 	}
 
 	if (func_call->paramCount() != func_def.paramCount()) {
-		throw Exception(token.value_ + "function parameters doesnt match function deffinition" + "at" + token.getPos());
+		throw Exception(token.value_ + "function parameters doesnt match function deffinition" + "at" + token.getPos().toString());
 	}
 
 	return std::move(func_call);
@@ -267,9 +270,7 @@ StatemPtr Parser::loopStatemParse(Token loop_token)
 		}
 		isAcceptableOrThrow(Type::RND_BR_CL);
 
-		isAcceptableOrThrow(Type::CUR_BR_OP);
-		loop_block = std::make_unique<BlockStatement>(block_);
-		blockStateParse(*loop_block);
+		loop_block = std::move(blockStateParse());
 
 		std::unique_ptr<ForStatement> for_statem = std::make_unique<ForStatement>(std::move(logic_expr),std::move(loop_block), std::move(init_instr), std::move(loop_instr));
 		return std::move(for_statem);
@@ -298,9 +299,9 @@ StatemPtr Parser::loopStatemParse(Token loop_token)
 			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
 		}
 
-		isAcceptableOrThrow(Type::CUR_BR_OP);
-		loop_block = std::make_unique<BlockStatement>(block_);
-		blockStateParse(*loop_block);
+		loop_block = std::move(blockStateParse());
+
+
 
 		std::unique_ptr<ForEachStatement> for_each_statem = std::make_unique<ForEachStatement>(coll, iter, std::move(loop_block));
 		return std::move(for_each_statem);
@@ -328,8 +329,8 @@ StatemPtr Parser::assignOrGraphicStatemParse(Token token)
 	}
 	else
 	{
-		if (!block_->isValidVar(token.value_)) {
-			block_->addVar(token.value_, std::move(index_expr));
+		if (!currParseBlock_->isValidVar(token.value_)) {
+			currParseBlock_->addVar(token.value_, std::move(index_expr));
 			return ret_state;
 		}
 		else {
@@ -343,11 +344,11 @@ StatemPtr Parser::assignStatemParse(Token token, ExprPtr index)
 {
 	ExprPtr expr_assign = std::move(logicExprParse());
 
-	if ( !block_->isValidVar(token.value_)) {
-		block_->addVar(token.value_, std::move( index) );
+	if ( !currParseBlock_->isValidVar(token.value_)) {
+		currParseBlock_->addVar(token.value_, std::move( index) );
 	}
 
-	std::unique_ptr<AssignStatement> assign_statem = std::make_unique<AssignStatement>(block_->findVar(token.value_), std::move(expr_assign), std::move(index ) );
+	std::unique_ptr<AssignStatement> assign_statem = std::make_unique<AssignStatement>(currParseBlock_->findVar(token.value_), std::move(expr_assign), std::move(index ) );
 	return std::move(assign_statem);
 }
 
@@ -536,7 +537,7 @@ ExprPtr Parser::simplAssnbleExprParse() {
 			}
 			else {
 
-				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(block_->findVar(ident.value_));
+				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(currParseBlock_->findVar(ident.value_));
 			}
 		}
 	}

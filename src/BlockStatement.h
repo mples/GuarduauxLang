@@ -25,6 +25,9 @@ namespace Guarduaux {
 	class BlockStatement : public Statement {
 	public:
 		BlockStatement() = default;
+		BlockStatement(std::vector<StatemPtr> instr, BlockStatement * prt_block){
+
+		}
 		BlockStatement(BlockStatement * prt_block) {
 
 		}
@@ -53,7 +56,7 @@ namespace Guarduaux {
 
 	private:
 		Statement * parentBlock_;
-		std::list<StatemPtr> instructions_;
+		std::vector<StatemPtr> instructions_;
 		std::unordered_map < std::string, Variable> variables_;
 	};
 
