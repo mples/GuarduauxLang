@@ -2,9 +2,9 @@
 
 #include <memory>
 #include <list>
-#include "Token.h"
-#include "Expresion.h"
-#include "TokenType.h"
+#include "Token/Token.h"
+#include "Expresions/Expresion.h"
+#include "Token/TokenType.h"
 
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
 using StatemPtr = std::unique_ptr<Guarduaux::Statement>;

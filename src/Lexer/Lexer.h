@@ -1,6 +1,6 @@
 #pragma once
 #include "Input.h"
-#include "Token.h"
+#include "Token/Token.h"
 
 namespace Guarduaux {
 

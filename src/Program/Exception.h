@@ -6,8 +6,8 @@
 #include <iostream>
 #include <list>
 
-#include "Token.h"
-#include "TokenTypeTable.h"
+#include "Token/Token.h"
+#include "Token/TokenTypeTable.h"
 
 namespace Guarduaux {
 	class Exception : std::runtime_error {

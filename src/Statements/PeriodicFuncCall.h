@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FuncCall.h"
-#include "Expresion.h"
+#include "Statements/FuncCall.h"
+#include "Expresions/Expresion.h"
 
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
 using StatemPtr = std::unique_ptr<Guarduaux::Statement>;

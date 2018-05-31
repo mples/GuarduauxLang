@@ -12,9 +12,14 @@ namespace Guarduaux {
 			CONTINUE
 		};
 
-		explicit Return(Type type = Type::NONE);
+		explicit Return(Type type = Type::NONE){
+			type = Type::NONE;
 
-		explicit Return(Type type, Variable variable);
+		}
+
+		explicit Return(Type type, Variable variable){
+
+		}
 
 		Type type_;
 		Variable variable_;

@@ -6,11 +6,9 @@
 #include <sstream>
 
 #include "../include/catch.hpp"
-#include "../src/Parser.h"
+#include "Parser/Parser.h"
 
 using  namespace Guarduaux;
-
-int theAnswer() { return 42; }
 
 TEST_CASE( "parser_tests" ) {
 
@@ -134,7 +132,8 @@ TEST_CASE( "parser_tests" ) {
         WHEN("Correct assign  statment definition") {
 
             THEN("works - Contain main function") {
-                stream << "func scene() {"
+                stream << "func rysuj(){}"
+                          "func scene() {"
                           "a;"
                           "zmienna = a + 12 ;"
                           "kol[10];"
@@ -310,6 +309,57 @@ TEST_CASE( "parser_tests" ) {
                           "}";
                 REQUIRE_NOTHROW(parser.parse());
             }
+        }
+    }
+
+    SECTION("Return  Statment parse"){
+        std::string streamValue = " ";
+        std::stringstream stream(streamValue);
+        std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(stream);
+        Parser parser(std::move(lexer));
+
+        WHEN("Wrong return statement definition") {
+            THEN("Exception appears - 1") {
+                stream << "func scene() {"
+                          "return"
+                          "}";
+                REQUIRE_THROWS(parser.parse());
+            }
+            THEN("Exception appears - 1") {
+                stream << "func scene() {"
+                          "rrtur 2;"
+                          "}";
+                REQUIRE_THROWS(parser.parse());
+            }
+            THEN("Exception appears - 1") {
+                stream << "func scene() {"
+                          "if(){"
+                          "else{"
+                          "}"
+                          "}";
+                REQUIRE_THROWS(parser.parse());
+            }
+
+
+        }
+
+
+        WHEN("Correct return  statment definition") {
+
+            THEN("works - Contain main function") {
+                stream << "func scene() {"
+                          "return 0;"
+                          "}";
+                REQUIRE_NOTHROW(parser.parse());
+            }
+            THEN("works - Contain main function") {
+                stream << "func scene() {"
+                          "a =  2;"
+                          "return a;"
+                          "}";
+                REQUIRE_NOTHROW(parser.parse());
+            }
+
         }
     }
 

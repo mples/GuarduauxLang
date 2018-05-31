@@ -5,25 +5,26 @@
 #include <list>
 #include <functional>
 
-#include <Program.h>
-#include "Expresion.h"
-#include "Exception.h"
-#include "Variable.h"
-#include "FuncCall.h"
-#include "FuncDef.h"
-#include "IfStatement.h"
-#include "AssignStatement.h"
-#include "ForStatement.h"
-#include "ForEachStatement.h"
-#include "PeriodicFuncCall.h"
-#include "LogicExpression.h"
-#include "AddExpression.h"
-#include "RelatExpression.h"
-#include "SimpleLogicExpression.h"
-#include "AssignableExpression.h"
-#include "SimpleAssnblExpression.h"
-#include "MultipExpression.h"
-#include "GraphFunc.h"
+#include <Program/Program.h>
+#include "Expresions/Expresion.h"
+#include "Program/Exception.h"
+#include "Program/Variable.h"
+#include "Statements/FuncCall.h"
+#include "Program/FuncDef.h"
+#include "Statements/IfStatement.h"
+#include "Statements/AssignStatement.h"
+#include "Statements/ForStatement.h"
+#include "Statements/ForEachStatement.h"
+#include "Statements/PeriodicFuncCall.h"
+#include "Expresions/LogicExpression.h"
+#include "Expresions/AddExpression.h"
+#include "Expresions/RelatExpression.h"
+#include "Expresions/SimpleLogicExpression.h"
+#include "Expresions/AssignableExpression.h"
+#include "Expresions/SimpleAssnblExpression.h"
+#include "Expresions/MultipExpression.h"
+#include "Statements/GraphFunc.h"
+#include "Statements/ReturnStatement.h"
 
 using namespace Guarduaux;
 
@@ -49,11 +50,15 @@ void Parser::clearLexer()
 	lexer_.reset(nullptr);
 }
 
-void Parser::parse()
+Program & Parser::parse()
 {
 	if (lexer_) {
 		lexer_->getToken();
 		parseProgram();
+		return prog_;
+	}
+	else {
+	    throw Exception("Lexer not found.");
 	}
 }
 
@@ -94,9 +99,11 @@ void Parser::isAcceptableOrThrow(Type type, std::function<void()> func)
 std::unique_ptr<FuncDef> Parser::funcDefParse()
 {
 	std::unique_ptr<FuncDef> func;
-	
-	isAcceptableOrThrow(TokenType::IDENTIFIER);
-    std::string func_name = lexer_->currentToken().value_;
+	std::string func_name;
+	isAcceptableOrThrow(TokenType::IDENTIFIER, [&]()  {
+		func_name = lexer_->currentToken().value_;
+	});
+
 
 	isAcceptableOrThrow(TokenType::RND_BR_OP);
 	std::vector<std::string>param_vector = parametersParse();
@@ -130,7 +137,7 @@ BlockPtr Parser::blockStateParse()
 
 	Token pars_tok = Token::unidentifiedType();
 
-	std::unordered_map<TokenType, std::function<void()> > statements_list = {
+	static const std::unordered_map<TokenType, std::function<void()> > statements_list = {
 		{TokenType::IDENTIFIER,		[&]() {
 			curr_block->addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
 				isAcceptableOrThrow(Type::SEMICOLON);
@@ -146,8 +153,12 @@ BlockPtr Parser::blockStateParse()
 		}
 		},
 		{ TokenType::FOR_EAC,		[&]() {
-			curr_block->addInstr(std::move(loopStatemParse(pars_tok)));
-		}
+			curr_block->addInstr(std::move(loopStatemParse(pars_tok))); }
+		},
+		{ TokenType::RET,		[&]() {
+		    curr_block->addInstr(std::move(returnStatemParse()));
+		    isAcceptableOrThrow(Type::SEMICOLON);
+		    }
 		}
 	};
 
@@ -545,5 +556,10 @@ ExprPtr Parser::simplAssnbleExprParse() {
 		throw WrongTokenException(lexer_->currentToken(), { Type::IDENTIFIER, Type::NUMBER });
 	}
 	return simple_assnable_expr;
+}
+
+StatemPtr Parser::returnStatemParse() {
+    auto return_statem = std::make_unique<ReturnStatem>(std::move(logicExprParse()));
+	return std::move(return_statem);
 }
 

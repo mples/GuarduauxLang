@@ -3,8 +3,8 @@
 #include <memory>
 #include <list>
 #include "Statement.h"
-#include "FuncDef.h"
-#include "Expresion.h"
+#include "Program/FuncDef.h"
+#include "Expresions/Expresion.h"
 
 
 namespace Guarduaux {

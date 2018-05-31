@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Expresion.h"
-#include "BlockStatement.h"
-#include "AssignStatement.h"
+#include "Expresions/Expresion.h"
+#include "Statements/BlockStatement.h"
+#include "Statements/AssignStatement.h"
 
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
 using BlockPtr = std::unique_ptr<Guarduaux::BlockStatement>;

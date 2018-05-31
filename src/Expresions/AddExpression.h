@@ -3,7 +3,7 @@
 #include <memory>
 #include <list>
 #include "Expresion.h"
-#include "Variable.h"
+#include "Program/Variable.h"
 
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "Token.h"
-
+#include <memory>
+#include "Token/Token.h"
 
 
 namespace Guarduaux {
@@ -13,8 +13,11 @@ namespace Guarduaux {
 	{
 	public:
 		Variable();
+		Variable(const Variable & other);
 		Variable(Token tok);
 		Variable(std::vector<Variable> var_list);
+
+		Variable& operator=(const Variable& other);
 
 		//TODO
 	private:

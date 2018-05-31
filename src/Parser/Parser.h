@@ -4,9 +4,9 @@
 #include <utility>
 #include <functional>
 
-#include "Lexer.h"
-#include "Program.h"
-#include "Statement.h"
+#include "Lexer/Lexer.h"
+#include "Program/Program.h"
+#include "Statements/Statement.h"
 
 
 
@@ -31,7 +31,7 @@ namespace Guarduaux {
 
 		~Parser() = default;
 
-		void parse();
+		Program & parse();
 
 	private:
 		std::unique_ptr<Lexer> lexer_;
@@ -61,6 +61,7 @@ namespace Guarduaux {
 		StatemPtr graphicStatemParse(Token token, ExprPtr index);
 		StatemPtr drawFuncParse(Token token, ExprPtr index);
 		StatemPtr otherGrpahFunParse(Token token, ExprPtr index);
+		StatemPtr returnStatemParse();
 
 
 		ExprPtr logicExprParse();

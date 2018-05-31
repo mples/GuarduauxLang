@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Expresion.h"
-#include "LogicExpression.h"
+#include "Expresions/Expresion.h"
+#include "Expresions/LogicExpression.h"
 #include "Statement.h"
 
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
