@@ -72,6 +72,8 @@ namespace Guarduaux {
 		ExprPtr assignableExprParse();
 		ExprPtr simplAssnbleExprParse();
 		ExprPtr multpExprParse();
+
+		std::unique_ptr<Variable> numberParse();
 	};
 
 

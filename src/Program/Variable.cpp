@@ -20,3 +20,7 @@ Guarduaux::Variable::Variable(const Guarduaux::Variable &) {
 
 }
 
+Guarduaux::Variable::Variable(int number) {
+
+}
+

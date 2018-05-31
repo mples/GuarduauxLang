@@ -1,8 +1,8 @@
 #include "TokenTypeTable.h"
 
-const std::string Guarduaux::TokenTypeTable::getName(const TokenType & type)
+const  std::string Guarduaux::TokenTypeTable::getName(const TokenType & type)
 {
-	std::unordered_map<TokenType,std::string> typeNamesTable = {
+	const static std::unordered_map<TokenType,std::string> typeNamesTable = {
 		{TokenType::FUNC,	"Function"},
 		{TokenType::RET,	"Return"},
 
@@ -55,7 +55,7 @@ const std::string Guarduaux::TokenTypeTable::getName(const TokenType & type)
 
 		{ TokenType::IDENTIFIER,	"Identifier" },
 		{ TokenType::NUMBER,		"Number" },
-		{ TokenType::NEG_NUMBER,	"Negativ Number" },
+		{ TokenType::MINUS,			"Minus" },
 		{ TokenType::DOT,			"Dot" },
 		{ TokenType::COMMA,			"Comma" },
 		{ TokenType::COLON,			"Colon" },

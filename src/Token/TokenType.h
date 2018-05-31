@@ -43,7 +43,7 @@ namespace Guarduaux {
 
 		IDENTIFIER,
 		NUMBER,
-		NEG_NUMBER,
+		MINUS,
 		DOT,
 		COMMA,
 		COLON,

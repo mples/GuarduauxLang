@@ -530,9 +530,10 @@ ExprPtr Parser::multpExprParse()
 ExprPtr Parser::simplAssnbleExprParse() {
 	std::unique_ptr<Expresion> simple_assnable_expr;
 
-	if (isAcceptable(Type::NUMBER)) {
+	std::unique_ptr<Variable> number_var = numberParse();
+	if ( number_var ) {
 
-		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(new Variable(lexer_->currentToken() ));
+		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>( number_var.operator*() );
 		//TODO fix this
 	}
 	else if (isAcceptable(Type::IDENTIFIER)) {
@@ -562,4 +563,33 @@ StatemPtr Parser::returnStatemParse() {
     auto return_statem = std::make_unique<ReturnStatem>(std::move(logicExprParse()));
 	return std::move(return_statem);
 }
+
+std::unique_ptr<Variable> Parser::numberParse() {
+	std::unique_ptr<Variable> number_var;
+    bool isNegativ =  isAcceptable(Type::MINUS);
+    if( isNegativ){
+		int number;
+		isAcceptableOrThrow(Type::NUMBER, [&]() {
+			number = std::stoi(lexer_->currentToken().value_) ;
+		});
+
+		number_var = std::make_unique<Variable>(-number);
+		return std::move(number_var);
+    }
+    else {
+		int number;
+    	if(isAcceptable(Type::NUMBER, [&]() {
+				number = std::stoi(lexer_->currentToken().value_) ;})  ){
+			 number_var = std::make_unique<Variable>(-number);
+			return std::move(number_var);
+    	}
+    	else{
+			return std::move(number_var);
+    	}
+    }
+
+
+
+}
+
 
