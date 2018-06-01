@@ -13,16 +13,36 @@ namespace Guarduaux {
 	{
 	public:
 		Variable();
-		Variable(const Variable & other);
 		Variable(Token tok);
 		Variable(int number);
-		Variable(std::vector<Variable> var_list);
+
+		Variable(std::vector<int> var_list);
 
 		Variable& operator=(const Variable& other);
 
-		//TODO
+        Variable& operator*(const Variable &other) const;
+        Variable& operator/(const Variable &other) const;
+
+        Variable& operator+(const Variable &other) const;
+        Variable& operator-(const Variable &other) const;
+
+        Variable& operator!() const;
+
+        Variable& operator==(const Variable &other) const;
+        Variable& operator!=(const Variable &other) const;
+
+        Variable& operator<(const Variable &other) const;
+        Variable& operator<=(const Variable &other) const;
+        Variable& operator>(const Variable &other) const;
+        Variable& operator>=(const Variable &other) const;
+
+        Variable& operator&&(const Variable &other) const;
+
+		Variable get(int i = 0);
+		int calculate();
+
 	private:
-		std::vector<Variable> variableList_;
+		std::vector<int> variableList_;
 	};
 }
 

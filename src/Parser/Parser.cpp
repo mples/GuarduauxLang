@@ -17,7 +17,7 @@
 #include "Statements/ForEachStatement.h"
 #include "Statements/PeriodicFuncCall.h"
 #include "Expresions/LogicExpression.h"
-#include "Expresions/AddExpression.h"
+#include "Expresions/AndExpression.h"
 #include "Expresions/RelatExpression.h"
 #include "Expresions/SimpleLogicExpression.h"
 #include "Expresions/AssignableExpression.h"
@@ -474,7 +474,7 @@ ExprPtr Parser::logicExprParse()
 
 ExprPtr Parser::andExprParse()
 {
-	std::unique_ptr<AddExpression> and_expr = std::make_unique<AddExpression>(std::move(relatExprParse()));
+	std::unique_ptr<AndExpression> and_expr = std::make_unique<AndExpression>(std::move(relatExprParse()));
 
 	while (isAcceptable(Type::AND_OP) ){
 		and_expr->addNewRelatExpr( std::move(relatExprParse() ) );
@@ -532,9 +532,7 @@ ExprPtr Parser::simplAssnbleExprParse() {
 
 	std::unique_ptr<Variable> number_var = numberParse();
 	if ( number_var ) {
-
 		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>( number_var.operator*() );
-		//TODO fix this
 	}
 	else if (isAcceptable(Type::IDENTIFIER)) {
 		Token ident = lexer_->currentToken();
@@ -546,6 +544,9 @@ ExprPtr Parser::simplAssnbleExprParse() {
 				ExprPtr index_expr;
 				index_expr = std::move(logicExprParse());
 				isAcceptableOrThrow(Type::SQR_BR_CL);
+
+				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(
+						std::make_pair(&(currParseBlock_->findVar(ident.value_)),std::move(index_expr) ) );
 			}
 			else {
 

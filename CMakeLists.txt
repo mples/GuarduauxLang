@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(Guarduaux_Lang)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+
 
 include_directories(src)
 
@@ -9,7 +10,7 @@ add_executable(Guarduaux_Lang
         include/catch.hpp
         tests/lexer_test.cpp
         tests/parser_tests.cpp
-        src/Expresions/AddExpression.h
+        src/Expresions/AndExpression.h
         src/Expresions/AssignableExpression.h
         src/Statements/AssignStatement.h
         src/Statements/BlockStatement.h

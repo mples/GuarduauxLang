@@ -11,20 +11,28 @@ namespace Guarduaux {
 
 	class LogicExpression : public Expresion {
 	public:
-		LogicExpression(ExprPtr add_expr) {
-
+		LogicExpression(ExprPtr and_expr) {
+			andExprList_.push_back(std::move(and_expr));
 		}
 
 		Variable calculate() override{
-			return Variable();
+
+			Variable ret_var = andExprList_.begin()->get()->calculate();
+			andExprList_.pop_front();
+			while( !andExprList_.empty()){
+				ret_var = ret_var && andExprList_.begin()->get()->calculate();
+				andExprList_.pop_front();
+			}
+
+			return ret_var;
 		}
 
 
-		void addAlternativeAddExpr(ExprPtr add_expr) {
-
+		void addAlternativeAddExpr(ExprPtr and_expr) {
+			andExprList_.push_back(std::move(and_expr));
 		}
 
 	private:
-		std::list<ExprPtr> addExprList_;
+		std::list<ExprPtr> andExprList_;
 	};
 }
