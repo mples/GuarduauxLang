@@ -11,20 +11,31 @@ namespace Guarduaux {
 	class AssignStatement : public Statement {
 	public:
 
-		AssignStatement(Variable& var, ExprPtr expr, ExprPtr index){
-
-		}
-		AssignStatement(Variable& var, ExprPtr expr) {
-
+		AssignStatement(std::shared_ptr<Variable> var, ExprPtr expr, ExprPtr index){
+			var_ = var;
+			expr_ = std::move(expr);
+			varIndex_ = std::move(index);
 		}
 		Return run() override {
-
+            std::shared_ptr<Variable> var = expr_->calculate();
+			if(varIndex_){
+				if(var->size()){
+					var->get( varIndex_->calculate()->get()) = var->get();
+				}
+				else {
+					throw Exception ("Cannot assign multidimensional variable to single dimensional variable");
+				}
+			}
+			else {
+				var_ = var;
+			}
+			return Return();
 		}
 
 	private:
 
 		ExprPtr expr_;
-		Variable* var_;
+		std::shared_ptr<Variable> var_;
 		ExprPtr varIndex_;
 	};
 

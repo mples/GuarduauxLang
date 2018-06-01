@@ -10,6 +10,6 @@ namespace Guarduaux {
 	public:
 		virtual ~Expresion() = default;
 
-		virtual Variable calculate()  = 0;
+		virtual std::shared_ptr<Variable> calculate()  = 0;
 	};
 }

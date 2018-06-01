@@ -15,12 +15,14 @@ namespace Guarduaux {
 			negated_ = neg;
 		}
 
-		Variable calculate() override {
+		std::shared_ptr<Variable> calculate() override {
+			std::shared_ptr<Variable> var = assbleExpr_->calculate();
 			if(negated_){
-				return !(assbleExpr_->calculate());
+				*var = !(*(var));
+				return var;
 			}
 			else {
-				return assbleExpr_->calculate();
+				return var;
 			}
 		}
 

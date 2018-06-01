@@ -15,12 +15,12 @@ namespace Guarduaux {
 			relatExprList_.push_back(std::move(relat_expr));
 		}
 
-		Variable calculate() override{
+        std::shared_ptr<Variable> calculate() override{
 
-            Variable ret_var = relatExprList_.begin()->get()->calculate();
+            std::shared_ptr<Variable> ret_var = relatExprList_.begin()->get()->calculate();
             relatExprList_.pop_front();
             while( !relatExprList_.empty()){
-                ret_var = ret_var && relatExprList_.begin()->get()->calculate();
+                *ret_var = *ret_var && *(relatExprList_.begin()->get()->calculate());
                 relatExprList_.pop_front();
             }
 

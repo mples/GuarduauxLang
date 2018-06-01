@@ -10,11 +10,13 @@ namespace Guarduaux {
 
 	class PeriodicFuncCall : public FuncCall {
 	public:
-		PeriodicFuncCall(StatemPtr func_call, ExprPtr period) : FuncCall(dynamic_cast<FuncCall&>(*func_call).getFuncDef() ){
-
+		PeriodicFuncCall(StatemPtr func_call, ExprPtr period) : FuncCall(dynamic_cast<FuncCall&>(*func_call)){
+			callingPeriod_= std::move(period);
 		}
 
 		Return run() override {
+
+			//TODO run funcCall every period
 
 		}
 

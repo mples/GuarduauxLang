@@ -15,10 +15,17 @@ namespace Guarduaux {
 
     class ReturnStatem : public Statement {
     public:
-        ReturnStatem(ExprPtr expr) {}
+        ReturnStatem(ExprPtr expr) {
+            returnedExpr_ = std::move(expr);
+        }
 
         Return run() override {
-
+            if(returnedExpr_){
+                return Return(returnedExpr_->calculate());
+            }
+            else {
+                return Return();
+            }
         }
     private:
         ExprPtr returnedExpr_;

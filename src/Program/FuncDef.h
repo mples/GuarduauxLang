@@ -21,8 +21,12 @@ namespace Guarduaux {
 				//funcBlock_->addVar(p);
 		    }
 		}
-		FuncDef(const FuncDef&) = delete;
-		FuncDef &operator = (const FuncDef&) = delete;
+		FuncDef(const FuncDef&) {
+
+		};
+		FuncDef &operator = (const FuncDef&) {
+
+		}
 		~FuncDef() = default;
 
 

@@ -10,29 +10,33 @@
 namespace Guarduaux {
 	class FuncCall : public Statement{
 	public:
-		FuncCall(FuncDef& func_def) : funcDef_(func_def){
+		FuncCall(FuncDef& func_def,std::vector<std::unique_ptr<Expresion> > params ) :
+				funcDef_(func_def), parameters_(std::move(params)){
 
 		}
-
-		void addParam(std::unique_ptr<Expresion> param){
-
+		FuncCall( FuncCall & other){
+			funcDef_ = other.funcDef_;
+			parameters_.swap(other.parameters_);
 		}
 
-		unsigned int paramCount(){
-
-		}
 
 		Return run() override{
-
+			//TODO add parametes to duncdef run
+			return funcDef_.run();
 		}
 
 		FuncDef & getFuncDef() {
 			return funcDef_;
 		}
 
+		std::vector<std::unique_ptr<Expresion>> &getParameters_()  {
+			return parameters_;
+		}
+
 	private:
 
-		FuncDef & funcDef_;
-		std::list<std::unique_ptr<Expresion> > parameters_;
+		FuncDef  funcDef_;
+		std::vector<std::unique_ptr<Expresion> > parameters_;
+
 	};
 }

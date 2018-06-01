@@ -222,23 +222,23 @@ StatemPtr Parser::funcCallParse(Token token)
 		throw Exception(token.value_ + "is not a valid function identifier.");
 	}
 
-	FuncDef &func_def = prog_.getFuncDef(token.value_);		//TODO
-	std::unique_ptr<FuncCall>  func_call = std::make_unique<FuncCall>(func_def); 
-
+	FuncDef &func_def = prog_.getFuncDef(token.value_);
+    std::vector<std::unique_ptr<Expresion> > parameters;
 	if (!isAcceptable(Type::RND_BR_CL)) {
-		func_call->addParam(logicExprParse());
+
+        parameters.push_back(logicExprParse());
 		while (!isAcceptable(Type::RND_BR_CL)) {
 			isAcceptableOrThrow(Type::COMMA);
-			func_call->addParam(logicExprParse());
+			parameters.push_back(logicExprParse());
 		}
 	}
 
-	if (func_call->paramCount() != func_def.paramCount()) {
+	if (parameters.size() != func_def.paramCount()) {
 		throw Exception(token.value_ + "function parameters doesnt match function deffinition" + "at" + token.getPos().toString());
 	}
 
-	return std::move(func_call);
-	//return StatemPtr();
+
+	return std::make_unique<FuncCall>(func_def , std::move(parameters));
 }
 
 StatemPtr Parser::perioFuncCallParse(Token token, StatemPtr func_call)
@@ -502,7 +502,7 @@ ExprPtr Parser::simplLogicExprParse()
 	if (isAcceptable(Type::NEG)) {
 		return std::make_unique<SimpleLogicExpression>(std::move(assignableExprParse()), true );
 	}else{
-		return std::make_unique<SimpleLogicExpression>(std::move(assignableExprParse()) );
+		return std::move(std::make_unique<SimpleLogicExpression>(std::move(assignableExprParse()) ) );
 	}
 }
 
@@ -518,7 +518,9 @@ ExprPtr Parser::assignableExprParse()
 
 ExprPtr Parser::multpExprParse()
 {
-	std::unique_ptr<MultipExpression> assnable_expr = std::make_unique<MultipExpression>(std::move(simplAssnbleExprParse()));
+	ExprPtr exr = std::move(simplAssnbleExprParse());
+	std::unique_ptr<MultipExpression> assnable_expr = std::make_unique<MultipExpression>(
+			std::move(exr));
 
 	while (isAcceptable(Type::MUL_OP) || isAcceptable (Type::DIV_OP) ){
 		assnable_expr->addSimpleAssignExpr(std::move(simplAssnbleExprParse()), lexer_->currentToken().type_);
@@ -532,7 +534,7 @@ ExprPtr Parser::simplAssnbleExprParse() {
 
 	std::unique_ptr<Variable> number_var = numberParse();
 	if ( number_var ) {
-		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>( number_var.operator*() );
+		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>( std::make_shared<Variable>(*number_var) );
 	}
 	else if (isAcceptable(Type::IDENTIFIER)) {
 		Token ident = lexer_->currentToken();
@@ -546,18 +548,18 @@ ExprPtr Parser::simplAssnbleExprParse() {
 				isAcceptableOrThrow(Type::SQR_BR_CL);
 
 				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(
-						std::make_pair(&(currParseBlock_->findVar(ident.value_)),std::move(index_expr) ) );
+						currParseBlock_->findVar(ident.value_),std::move(index_expr)  );
 			}
 			else {
 
-				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(currParseBlock_->findVar(ident.value_));
+				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(currParseBlock_->findVar(ident.value_) );
 			}
 		}
 	}
 	else {
 		throw WrongTokenException(lexer_->currentToken(), { Type::IDENTIFIER, Type::NUMBER });
 	}
-	return simple_assnable_expr;
+	return std::move(simple_assnable_expr);
 }
 
 StatemPtr Parser::returnStatemParse() {
@@ -581,7 +583,7 @@ std::unique_ptr<Variable> Parser::numberParse() {
 		int number;
     	if(isAcceptable(Type::NUMBER, [&]() {
 				number = std::stoi(lexer_->currentToken().value_) ;})  ){
-			 number_var = std::make_unique<Variable>(-number);
+			 number_var = std::make_unique<Variable>(number);
 			return std::move(number_var);
     	}
     	else{

@@ -44,7 +44,7 @@ namespace Guarduaux {
 		   // variables_.insert(std::make_pair(var_name, Variable(expr->calculate())  ) );
 		}
 
-		Variable& findVar(std::string& var_name){
+		std::shared_ptr<Variable> findVar(std::string& var_name){
 		    /*if(variables_.find(var_name) != variables_.end()){
                 return variables_.at(var_name);
 		    }
@@ -72,12 +72,13 @@ namespace Guarduaux {
 
 		Return run() override{
 		    // TODO variables
-            /*for(const auto & func : instructions_){
+            for(const auto & func : instructions_){
                 Return ret = func->run();
                 if(ret.type_ == Return::VARIABLE){
                     return ret;
                 }
-            }*/
+            }
+
             return Return();
 
 		}

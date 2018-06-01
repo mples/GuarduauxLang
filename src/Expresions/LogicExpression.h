@@ -15,12 +15,12 @@ namespace Guarduaux {
 			andExprList_.push_back(std::move(and_expr));
 		}
 
-		Variable calculate() override{
+        std::shared_ptr<Variable> calculate() override{
 
-			Variable ret_var = andExprList_.begin()->get()->calculate();
+            std::shared_ptr<Variable> ret_var = andExprList_.begin()->get()->calculate();
 			andExprList_.pop_front();
 			while( !andExprList_.empty()){
-				ret_var = ret_var && andExprList_.begin()->get()->calculate();
+				*ret_var = *ret_var && andExprList_.begin()->get()->calculate();
 				andExprList_.pop_front();
 			}
 

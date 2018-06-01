@@ -8,20 +8,18 @@ namespace Guarduaux {
 		enum Type {
 			NONE,
 			VARIABLE,
-			BREAK,
-			CONTINUE
 		};
 
-		explicit Return(Type type = Type::NONE){
-			type = Type::NONE;
-
+		explicit Return(){
+			type_ = Type::NONE;
 		}
 
-		explicit Return(Type type, Variable variable){
-
+		explicit Return( std::shared_ptr<Variable> variable){
+			type_ = Type::VARIABLE;
+			variable_ = variable;
 		}
 
 		Type type_;
-		Variable variable_;
+		std::shared_ptr<Variable> variable_;
 	};
 }

@@ -12,15 +12,28 @@ namespace Guarduaux {
 	class IfStatement : public Statement {
 	public:
 		IfStatement(ExprPtr expr, BlockPtr if_block) {
-
+			condition_ = std::move(expr);
+			ifBlock_ = std::move(if_block);
 		}
 
 		IfStatement(ExprPtr expr, BlockPtr if_block, BlockPtr else_block) {
-
+			condition_ = std::move(expr);
+			ifBlock_ = std::move(if_block);
+			elseBlock_ = std::move(else_block);
 		}
 
 		Return run() override {
-
+			if(condition_->calculate()){
+				return ifBlock_->run();
+			}
+			else {
+				if(elseBlock_){
+					return elseBlock_->run();
+				}
+				else {
+					return Return();
+				}
+			}
 		}
 
 	private:
