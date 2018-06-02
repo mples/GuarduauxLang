@@ -18,16 +18,16 @@ namespace Guarduaux {
         std::shared_ptr<Variable> calculate() override {
 		    auto it = multipExprList_.begin();
             std::shared_ptr<Variable> ret_var = it->get()->calculate();
-			multipExprList_.pop_front();
+			++it;
 
 			for( const TokenType& t : addativOperatorList_){
 				if(t == TokenType::ADD_OP){
-					ret_var = ret_var->add(multipExprList_.begin()->get()->calculate());
-                    multipExprList_.pop_front();
+					ret_var = ret_var->add(it->get()->calculate());
+                    ++it;
 				}
 				else {
-					ret_var = ret_var->sub(multipExprList_.begin()->get()->calculate());
-                    multipExprList_.pop_front();
+					ret_var = ret_var->sub(it->get()->calculate());
+                    ++it;
 				}
 			}
 			return ret_var;

@@ -16,33 +16,34 @@ namespace Guarduaux {
 		}
 
 		std::shared_ptr<Variable> calculate() override {
-			std::shared_ptr<Variable> ret_var = simpleLogicExprList_.begin()->get()->calculate();
-			simpleLogicExprList_.pop_front();
+		    auto it = simpleLogicExprList_.begin();
+			std::shared_ptr<Variable> ret_var = it->get()->calculate();
+			++it;
 
 			for( const TokenType& t : relationOperatorsList_){
 				if(t == TokenType::GOE_OP){
-					ret_var = ret_var->goe(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->goe(it->get()->calculate());
+					++it;
 				}
 				else if(t == TokenType::GTH_OP){
-					ret_var = ret_var->gth(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->gth(it->get()->calculate());
+					++it;
 				}
 				else if(t == TokenType::LTH_OP){
-					ret_var = ret_var->lth(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->lth(it->get()->calculate());
+					++it;
 				}
 				else if(t == TokenType::LOE_OP){
-					ret_var = ret_var->loe(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->loe(it->get()->calculate());
+					++it;
 				}
 				else if(t == TokenType::EQU_OP){
-					ret_var = ret_var->equ(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->equ(it->get()->calculate());
+					++it;
 				}
 				else if(t == TokenType::NEQ_OP){
-					ret_var = ret_var->neq(simpleLogicExprList_.begin()->get()->calculate());
-					simpleLogicExprList_.pop_front();
+					ret_var = ret_var->neq(it->get()->calculate());
+					++it;
 				}
 
 			}

@@ -86,7 +86,13 @@ namespace Guarduaux {
 
 	private:
 		BlockStatement * parentBlock_;
-		std::vector<StatemPtr> instructions_;
+    public:
+        BlockStatement *getParentBlock_() const {
+            return parentBlock_;
+        }
+
+    private:
+        std::vector<StatemPtr> instructions_;
 		std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
 	};
 

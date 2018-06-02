@@ -174,6 +174,8 @@ BlockPtr Parser::blockStateParse()
 		}
 	}
 
+	currParseBlock_ = curr_block->getParentBlock_();
+
 	return std::move(curr_block);
 }
 
@@ -276,8 +278,10 @@ StatemPtr Parser::loopStatemParse(Token loop_token)
 
 		isAcceptableOrThrow(Type::SEMICOLON);
 
-		if(isAcceptable(Type::IDENTIFIER) ) {
-			loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken()));
+		if(isAcceptable(Type::IDENTIFIER, [&]() {
+            tok = lexer_->currentToken();
+        } )  ){
+			loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
 		}
 		else {
 			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
