@@ -41,24 +41,25 @@ namespace Guarduaux {
 		}
 
 		void addVar(std::string& var_name, ExprPtr expr){
-		   // variables_.insert(std::make_pair(var_name, Variable(expr->calculate())  ) );
+		    variables_.insert(std::make_pair(var_name, std::make_shared<Variable>())   );
 		}
 
 		std::shared_ptr<Variable> findVar(std::string& var_name){
-		    /*if(variables_.find(var_name) != variables_.end()){
+
+		    if(variables_.find(var_name) != variables_.end()){
                 return variables_.at(var_name);
 		    }
 		    else if(parentBlock_){
                 return parentBlock_->findVar(var_name);
 		    }
 		    else {
-		        throw Exception(var_name + "is not a valid variable");
-		    }*/
+		        throw Exception(var_name + " is not a valid variable");
+		    }
 
 		}
 
 		bool isValidVar( std::string& var_name){
-			/*if(variables_.find(var_name) != variables_.end()){
+			if(variables_.find(var_name) != variables_.end()){
 				return true;
 			}
 			else {
@@ -66,7 +67,7 @@ namespace Guarduaux {
 					return parentBlock_->isValidVar(var_name);
 				}
 			}
-            return false;*/
+            return false;
 
 		}
 
@@ -86,7 +87,7 @@ namespace Guarduaux {
 	private:
 		BlockStatement * parentBlock_;
 		std::vector<StatemPtr> instructions_;
-		std::unordered_map < std::string, Variable> variables_;
+		std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
 	};
 
 }

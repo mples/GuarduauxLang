@@ -27,7 +27,7 @@ namespace Guarduaux {
 				}
 			}
 			else {
-				var_ = var;
+				*var_ = *var;
 			}
 			return Return();
 		}

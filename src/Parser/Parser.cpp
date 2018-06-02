@@ -253,7 +253,7 @@ StatemPtr Parser::perioFuncCallParse(Token token, StatemPtr func_call)
 
 StatemPtr Parser::loopStatemParse(Token loop_token)
 {
-	Token tok = lexer_->currentToken();
+	Token tok = Token::unidentifiedType();
 	ExprPtr logic_expr;
 	StatemPtr init_instr;
 	StatemPtr loop_instr;
@@ -262,8 +262,10 @@ StatemPtr Parser::loopStatemParse(Token loop_token)
 	if (loop_token.type_ == Type::FOR) {
 		isAcceptableOrThrow(Type::RND_BR_OP);
 
-		if(isAcceptable(Type::IDENTIFIER) ) {
-			init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(lexer_->currentToken()));
+		if(isAcceptable(Type::IDENTIFIER, [&]() {
+			tok = lexer_->currentToken();
+		} )  ){
+			init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
 		}
 		else {
 			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
@@ -540,14 +542,17 @@ ExprPtr Parser::multpExprParse()
 }
 
 ExprPtr Parser::simplAssnbleExprParse() {
+    Token ident = Token::unidentifiedType();
 	std::unique_ptr<Expresion> simple_assnable_expr;
 
 	std::unique_ptr<Variable> number_var = numberParse();
 	if ( number_var ) {
 		simple_assnable_expr = std::make_unique<SimpleAssnblExpression>( std::make_shared<Variable>(*number_var) );
 	}
-	else if (isAcceptable(Type::IDENTIFIER)) {
-		Token ident = lexer_->currentToken();
+	else if (isAcceptable(Type::IDENTIFIER, [&]() {
+        ident = lexer_->currentToken();
+	}) )
+	{
 		if (isAcceptable(Type::RND_BR_OP)) {
 			simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(std::move(funcCallParse(ident)));
 		}

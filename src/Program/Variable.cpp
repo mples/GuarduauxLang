@@ -9,11 +9,6 @@ Guarduaux::Variable::Variable(Guarduaux::Token tok) {
 
 }
 
-
-
-
-
-
 Guarduaux::Variable::Variable(int number) {
     variableList_.push_back(number);
 }

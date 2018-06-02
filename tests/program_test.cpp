@@ -18,8 +18,8 @@ TEST_CASE( "function_tests" ) {
         std::stringstream stream(streamValue);
         std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(stream);
         Parser parser(std::move(lexer));
-/*
-        WHEN("No scene func defined ") {
+
+       /* WHEN("No scene func defined ") {
             THEN("Exception appears") {
                 stream << "func sceneee(){}";
                 Program progr = parser.parse();
@@ -46,7 +46,7 @@ TEST_CASE( "function_tests" ) {
                 Program progr = parser.parse();
                 REQUIRE_NOTHROW(progr.run());
             }
-        }*/
+        }
 
         WHEN("Program contains multiple function") {
 
@@ -58,6 +58,20 @@ TEST_CASE( "function_tests" ) {
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
                 REQUIRE(progr.run().variable_->get() == 0 );
+            }
+        }*/
+
+        WHEN("Program contains multiple function") {
+
+            THEN("func is found") {
+                stream << "func tkom() {}"
+                          "func scene() {"
+                          "a = 2;"
+                          "return a + 3 * 2;"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                REQUIRE(progr.run().variable_->get() == 8 );
             }
         }
 
