@@ -50,8 +50,16 @@ namespace Guarduaux {
 			context_->addVar(var_name,std::move(expr) );
 		}
 
+		void addVar(std::string& var_name, std::shared_ptr<Variable> var){
+			context_->addVar(var_name,var);
+		}
+
+		void updateVars(std::unordered_map < std::string, std::shared_ptr<Variable> > params){
+			context_->updateVars(params);
+		}
+
 		std::shared_ptr<Variable> findVar(std::string& var_name){
-			context_->findVar(var_name);
+			return context_->findVar(var_name);
 		}
 
 		bool isValidVar( std::string& var_name){
@@ -59,7 +67,6 @@ namespace Guarduaux {
 		}
 
 		Return run() override{
-		    // TODO variables
             for(const auto & func : instructions_){
                 Return ret = func->run();
                 if(ret.type_ == Return::VARIABLE){

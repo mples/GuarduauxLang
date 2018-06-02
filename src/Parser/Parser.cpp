@@ -109,18 +109,19 @@ std::unique_ptr<FuncDef> Parser::funcDefParse()
 	std::vector<std::string>param_vector = parametersParse();
 	isAcceptableOrThrow(TokenType::RND_BR_CL);
 
-	currContext_ = nullptr;
+	currContext_ = new Context(param_vector);
 	BlockPtr block_statem = std::move(blockStateParse() );
 
-
+	delete currContext_;
 	return std::move(std::make_unique<FuncDef>(func_name, param_vector, std::move(block_statem) ) );
 }
 
 std::vector<std::string> Parser::parametersParse()
 {
 	std::vector<std::string> param_vector;
-	if (isAcceptable(TokenType::IDENTIFIER )) {
-        param_vector.push_back(lexer_->currentToken().value_);
+	if (isAcceptable(TokenType::IDENTIFIER , [&] () {
+		param_vector.push_back(lexer_->currentToken().value_);
+	})) {
         while (isAcceptable(TokenType::COMMA) ){
 			isAcceptable(TokenType::IDENTIFIER, [&] {param_vector.push_back(lexer_->currentToken().value_); });
 		}
@@ -226,7 +227,7 @@ StatemPtr Parser::funcCallParse(Token token)
 		throw Exception(token.value_ + "is not a valid function identifier.");
 	}
 
-	FuncDef &func_def = prog_.getFuncDef(token.value_);
+	std::shared_ptr<FuncDef> func_def = prog_.getFuncDef(token.value_);
     std::vector<std::unique_ptr<Expresion> > parameters;
 	if (!isAcceptable(Type::RND_BR_CL)) {
 
@@ -237,7 +238,7 @@ StatemPtr Parser::funcCallParse(Token token)
 		}
 	}
 
-	if (parameters.size() != func_def.paramCount()) {
+	if (parameters.size() != func_def->paramCount()) {
 		throw Exception(token.value_ + "function parameters doesnt match function deffinition" + "at" + token.getPos().toString());
 	}
 

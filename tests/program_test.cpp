@@ -246,6 +246,25 @@ TEST_CASE( "function_tests" ) {
         }
 
 
+        WHEN("Calling other function than scene") {
+
+            THEN("func is found") {
+                stream << "func tkom(a) {"
+                          "return a+5;"
+                          "}"
+                          "func scene() {"
+                          "a = 10;"
+                          "b = tkom(a);"
+                          "return b;"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                Return result = progr.run();
+                REQUIRE(result.variable_->get() == 15 );
+            }
+        }
+
+
     }
 
 }

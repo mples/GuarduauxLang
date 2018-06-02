@@ -40,9 +40,21 @@ namespace Guarduaux {
 			return parameters_.size();
 		}
 
-		Return run(){
+		Return run(std::vector<std::unique_ptr<Expresion> > params){
+			std::unordered_map < std::string, std::shared_ptr<Variable> > vars;
+			int i = 0;
+			for(const auto & param : params){
+			    std::string param_name(parameters_[i]);
+				vars.insert(std::make_pair< std::string, std::shared_ptr<Variable> >(std::move(param_name), param->calculate() ));
+			}
+			funcBlock_->updateVars(vars);
             return funcBlock_->run();
 		}
+
+		Return run(){
+			return funcBlock_->run();
+		}
+
 	private:
 		const std::string identifier_;
 		std::vector<std::string> parameters_;

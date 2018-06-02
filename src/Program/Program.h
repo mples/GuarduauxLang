@@ -21,8 +21,8 @@ namespace Guarduaux {
 			return functions.find(func_name) != functions.end();
 		}
 
-		FuncDef& getFuncDef(const std::string & func_name) {
-			return *functions.at(func_name);
+		std::shared_ptr<FuncDef> getFuncDef(const std::string & func_name) {
+			return functions.at(func_name);
 		}
 
 		Return run(){
