@@ -137,7 +137,7 @@ BlockPtr Parser::blockStateParse()
 
 	Token pars_tok = Token::unidentifiedType();
 
-	static const std::unordered_map<TokenType, std::function<void()> > statements_list = {
+	 std::unordered_map<TokenType, std::function<void()> > statements_list = {
 		{TokenType::IDENTIFIER,		[&]() {
 			curr_block->addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
 				isAcceptableOrThrow(Type::SEMICOLON);
@@ -212,8 +212,9 @@ StatemPtr Parser::ifStatemParse()
 		else_block = blockStateParse();
 		return std::make_unique<IfStatement>(std::move(condit_expr), std::move(if_block), std::move(else_block));
 	}
-
-	return std::make_unique<IfStatement>(std::move(condit_expr), std::move(if_block));
+	else{
+		return std::make_unique<IfStatement>(std::move(condit_expr), std::move(if_block));
+	}
 }
 
 StatemPtr Parser::funcCallParse(Token token)
@@ -488,13 +489,32 @@ ExprPtr Parser::andExprParse()
 ExprPtr Parser::relatExprParse()
 {
 	std::unique_ptr<RelatExpression> relat_expr = std::make_unique<RelatExpression>(std::move(simplLogicExprParse()));
-	while (isAcceptable(Type::GOE_OP)
-		|| isAcceptable(Type::GTH_OP)
-		|| isAcceptable(Type::LOE_OP)
-		|| isAcceptable(Type::LTH_OP)
-		|| isAcceptable(Type::EQU_OP)
-		|| isAcceptable(Type::NEQ_OP)) {
-		relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), lexer_->currentToken().type_);
+	while (lexer_->currentToken().type_ ==(Type::GOE_OP)
+		|| lexer_->currentToken().type_ ==(Type::GTH_OP)
+		|| lexer_->currentToken().type_ ==(Type::LOE_OP)
+		|| lexer_->currentToken().type_ ==(Type::LTH_OP)
+		|| lexer_->currentToken().type_ ==(Type::EQU_OP)
+		|| lexer_->currentToken().type_ ==(Type::NEQ_OP)) {
+
+		if(isAcceptable(Type::GOE_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::GOE_OP);
+		}
+		else if(isAcceptable(Type::GTH_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::GTH_OP);
+		}
+		else if(isAcceptable(Type::LOE_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::LOE_OP);
+		}
+		else if(isAcceptable(Type::LTH_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::LTH_OP);
+		}
+		else if(isAcceptable(Type::EQU_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::EQU_OP);
+		}
+		else if(isAcceptable(Type::NEQ_OP)){
+			relat_expr->addNextSimpleLogExpr(std::move(simplLogicExprParse()), Type::NEQ_OP);
+		}
+
 	}
 	return std::move(relat_expr);
 }

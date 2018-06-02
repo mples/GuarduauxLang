@@ -23,7 +23,7 @@ namespace Guarduaux {
 		}
 
 		Return run() override {
-			if(condition_->calculate()){
+			if( condition_->calculate()->isTrue()){
 				return ifBlock_->run();
 			}
 			else {

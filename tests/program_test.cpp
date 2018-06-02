@@ -19,7 +19,7 @@ TEST_CASE( "function_tests" ) {
         std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(stream);
         Parser parser(std::move(lexer));
 
-       /* WHEN("No scene func defined ") {
+        /*WHEN("No scene func defined ") {
             THEN("Exception appears") {
                 stream << "func sceneee(){}";
                 Program progr = parser.parse();
@@ -59,15 +59,53 @@ TEST_CASE( "function_tests" ) {
                 REQUIRE(progr.isVaildFunc("tkom"));
                 REQUIRE(progr.run().variable_->get() == 0 );
             }
-        }*/
+        }
 
         WHEN("Program contains multiple function") {
 
             THEN("func is found") {
                 stream << "func tkom() {}"
                           "func scene() {"
-                          "a = 2;"
-                          "return a + 3 * 2;"
+                          "a = 3;"
+                          "b = 6;"
+                          "return a > b;"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                REQUIRE(progr.run().variable_->get() == 0 );
+            }
+        }
+
+        WHEN("Program contains if function") {
+
+            THEN("func is found") {
+                stream << "func tkom() {}"
+                          "func scene() {"
+                          "a = 3;"
+                          "b = 6;"
+                          "if(a > b){"
+                          "return 2;"
+                          "}"
+                          "else { return 1;}"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                REQUIRE(progr.run().variable_->get() == 1 );
+            }
+        }*/
+
+        WHEN("Program contains if function") {
+
+            THEN("func is found") {
+                stream << "func tkom() {}"
+                          "func scene() {"
+                          "a = 5;"
+                          "b = 3;"
+                          "if(b <= a){"
+                          "c=2; d = 6;"
+                          "return c+d;"
+                          "}"
+                          "else { return 6;}"
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));

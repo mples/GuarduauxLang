@@ -206,7 +206,7 @@ std::shared_ptr<Guarduaux::Variable> Guarduaux::Variable::equ(std::shared_ptr<Gu
         return std::make_shared<Variable>(var);;
     }
     else{
-        Variable var = Variable();
+        Variable var = Variable(0);
         return std::make_shared<Variable>(var);
     }
 }
@@ -218,8 +218,13 @@ std::shared_ptr<Guarduaux::Variable> Guarduaux::Variable::neq(std::shared_ptr<Gu
 
 std::shared_ptr<Guarduaux::Variable> Guarduaux::Variable::negate() {
     Variable var;
-    if( variableList_.empty()){
-        var = Variable(1);
+    if( !variableList_.empty()){
+        if(variableList_.at(0) == 1){
+            var = Variable(0);
+        }
+        else {
+            var = Variable(1);
+        }
     }else {
         var = Variable(0);
     }
@@ -276,11 +281,11 @@ std::shared_ptr<Guarduaux::Variable> Guarduaux::Variable::or_op(std::shared_ptr<
 
 bool Guarduaux::Variable::isTrue() {
     if(!variableList_.empty()){
-        if(variableList_.at(0) != 0){
-            return true;
+        if(variableList_.at(0) == 0){
+            return false;
         }
         else
-            return false;
+            return true;
     }else
         return false;
 
