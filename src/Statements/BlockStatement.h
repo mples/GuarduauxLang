@@ -14,6 +14,7 @@
 #include "Statement.h"
 #include "Expresions/Expresion.h"
 #include "Program/Exception.h"
+#include "Program/Context.h"
 
 
 
@@ -29,8 +30,13 @@ namespace Guarduaux {
 		BlockStatement(std::vector<StatemPtr> instr, BlockStatement * prt_block){
 
 		}
-		BlockStatement(BlockStatement * prt_block) {
-            parentBlock_ = prt_block;
+		BlockStatement(Context* c ) {
+			if(c){
+				context_ = std::make_unique<Context>( c );
+			}
+			else {
+				context_ = std::make_unique<Context>();
+			}
 		}
 		BlockStatement(const BlockStatement &) = delete;
 		BlockStatement &operator=(BlockStatement &) = delete;
@@ -41,34 +47,15 @@ namespace Guarduaux {
 		}
 
 		void addVar(std::string& var_name, ExprPtr expr){
-		    variables_.insert(std::make_pair(var_name, std::make_shared<Variable>())   );
+			context_->addVar(var_name,std::move(expr) );
 		}
 
 		std::shared_ptr<Variable> findVar(std::string& var_name){
-
-		    if(variables_.find(var_name) != variables_.end()){
-                return variables_.at(var_name);
-		    }
-		    else if(parentBlock_){
-                return parentBlock_->findVar(var_name);
-		    }
-		    else {
-		        throw Exception(var_name + " is not a valid variable");
-		    }
-
+			context_->findVar(var_name);
 		}
 
 		bool isValidVar( std::string& var_name){
-			if(variables_.find(var_name) != variables_.end()){
-				return true;
-			}
-			else {
-				if(parentBlock_){
-					return parentBlock_->isValidVar(var_name);
-				}
-			}
-            return false;
-
+			context_->isValidVar(var_name);
 		}
 
 		Return run() override{
@@ -84,16 +71,14 @@ namespace Guarduaux {
 
 		}
 
-	private:
-		BlockStatement * parentBlock_;
-    public:
-        BlockStatement *getParentBlock_() const {
-            return parentBlock_;
-        }
+		const std::unique_ptr<Context> &getContext_() const {
+			return context_;
+		}
 
     private:
         std::vector<StatemPtr> instructions_;
-		std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
+		std::unique_ptr<Context> context_;
+
 	};
 
 }

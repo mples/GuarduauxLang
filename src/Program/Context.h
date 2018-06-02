@@ -16,23 +16,18 @@ namespace Guarduaux {
 
     class Context {
     public:
-        Context(){
+        Context();
+        Context(const Context* other );
+        Context(const Context&& other )noexcept ;
 
-        }
-        Context(const Context& other ){
-            variables_ = std::unordered_map < std::string, Variable>( other.variables_);
-        }
+        void addVar(std::string& var_name, ExprPtr index);
 
-        void addVar(std::string& var_name, ExprPtr index){
+        std::shared_ptr<Variable> findVar(std::string var_name);
 
-        }
-
-        Variable& findVar(std::string var_name){
-
-        }
+        bool isValidVar( std::string& var_name);
 
     private:
-        std::unordered_map < std::string, Variable> variables_;
+        std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
     };
 
 }

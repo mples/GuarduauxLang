@@ -7,6 +7,7 @@
 #include "Lexer/Lexer.h"
 #include "Program/Program.h"
 #include "Statements/Statement.h"
+#include "Program/Context.h"
 
 
 
@@ -38,7 +39,7 @@ namespace Guarduaux {
 
 		Program prog_;
 
-		BlockStatement* currParseBlock_;
+		Context* currContext_ = nullptr;
 
 		void parseProgram();
 

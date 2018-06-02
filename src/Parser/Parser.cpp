@@ -109,7 +109,7 @@ std::unique_ptr<FuncDef> Parser::funcDefParse()
 	std::vector<std::string>param_vector = parametersParse();
 	isAcceptableOrThrow(TokenType::RND_BR_CL);
 
-	currParseBlock_ = nullptr;
+	currContext_ = nullptr;
 	BlockPtr block_statem = std::move(blockStateParse() );
 
 
@@ -132,8 +132,9 @@ std::vector<std::string> Parser::parametersParse()
 BlockPtr Parser::blockStateParse()
 {
 	isAcceptableOrThrow(TokenType::CUR_BR_OP);
-	BlockPtr curr_block = std::make_unique<BlockStatement>(currParseBlock_);
-	currParseBlock_ = curr_block.get();
+	Context* old_context = currContext_;
+	BlockPtr curr_block = std::make_unique<BlockStatement>(currContext_);
+	currContext_ =  curr_block->getContext_().get();
 
 	Token pars_tok = Token::unidentifiedType();
 
@@ -174,7 +175,7 @@ BlockPtr Parser::blockStateParse()
 		}
 	}
 
-	currParseBlock_ = curr_block->getParentBlock_();
+	currContext_ = old_context;
 
 	return std::move(curr_block);
 }
@@ -347,8 +348,8 @@ StatemPtr Parser::assignOrGraphicStatemParse(Token token)
 	}
 	else
 	{
-		if (!currParseBlock_->isValidVar(token.value_)) {
-			currParseBlock_->addVar(token.value_, std::move(index_expr));
+		if (!currContext_->isValidVar(token.value_)) {
+			currContext_->addVar(token.value_, std::move(index_expr));
 			return ret_state;
 		}
 		else {
@@ -362,11 +363,11 @@ StatemPtr Parser::assignStatemParse(Token token, ExprPtr index)
 {
 	ExprPtr expr_assign = std::move(logicExprParse());
 
-	if ( !currParseBlock_->isValidVar(token.value_)) {
-		currParseBlock_->addVar(token.value_, std::move( index) );
+	if ( !currContext_->isValidVar(token.value_)) {
+		currContext_->addVar(token.value_, std::move( index) );
 	}
 
-	std::unique_ptr<AssignStatement> assign_statem = std::make_unique<AssignStatement>(currParseBlock_->findVar(token.value_), std::move(expr_assign), std::move(index ) );
+	std::unique_ptr<AssignStatement> assign_statem = std::make_unique<AssignStatement>(currContext_->findVar(token.value_), std::move(expr_assign), std::move(index ) );
 	return std::move(assign_statem);
 }
 
@@ -587,11 +588,11 @@ ExprPtr Parser::simplAssnbleExprParse() {
 				isAcceptableOrThrow(Type::SQR_BR_CL);
 
 				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(
-						currParseBlock_->findVar(ident.value_),std::move(index_expr)  );
+						currContext_->findVar(ident.value_),std::move(index_expr)  );
 			}
 			else {
 
-				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(currParseBlock_->findVar(ident.value_) );
+				simple_assnable_expr = std::make_unique<SimpleAssnblExpression>(currContext_->findVar(ident.value_) );
 			}
 		}
 	}

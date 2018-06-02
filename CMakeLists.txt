@@ -45,4 +45,4 @@ add_executable(Guarduaux_Lang
         src/Token/TokenTypeTable.h
         src/Program/Variable.cpp
         src/Program/Variable.h
-        tests/program_test.cpp src/Program/Context.h tests/expressions_test.cpp src/Expresions/MultipExpression.cpp)
+        tests/program_test.cpp src/Program/Context.h tests/expressions_test.cpp src/Expresions/MultipExpression.cpp src/Program/Context.cpp)
