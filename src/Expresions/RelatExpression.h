@@ -21,27 +21,27 @@ namespace Guarduaux {
 
 			for( const TokenType& t : relationOperatorsList_){
 				if(t == TokenType::GOE_OP){
-					*ret_var = *ret_var >= *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->goe(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 				else if(t == TokenType::GTH_OP){
-					*ret_var = *ret_var > *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->gth(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 				else if(t == TokenType::LTH_OP){
-					*ret_var = *ret_var < *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->lth(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 				else if(t == TokenType::LOE_OP){
-					*ret_var = *ret_var <= *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->loe(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 				else if(t == TokenType::EQU_OP){
-					*ret_var = *ret_var == *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->equ(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 				else if(t == TokenType::NEQ_OP){
-					*ret_var = *ret_var != *(simpleLogicExprList_.begin()->get()->calculate());
+					ret_var = ret_var->neq(simpleLogicExprList_.begin()->get()->calculate());
 					simpleLogicExprList_.pop_front();
 				}
 

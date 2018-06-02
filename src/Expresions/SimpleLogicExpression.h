@@ -18,8 +18,7 @@ namespace Guarduaux {
 		std::shared_ptr<Variable> calculate() override {
 			std::shared_ptr<Variable> var = assbleExpr_->calculate();
 			if(negated_){
-				*var = !(*(var));
-				return var;
+				return var->negate();
 			}
 			else {
 				return var;

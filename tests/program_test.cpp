@@ -53,13 +53,15 @@ TEST_CASE( "function_tests" ) {
             THEN("func is found") {
                 stream << "func tkom() {}"
                           "func scene() {"
-                          "return 2;"
+                          "return 1+1 && 1-1;"
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 2);
+                REQUIRE(progr.run().variable_->get() == 0 );
             }
         }
+
+
     }
 
 }

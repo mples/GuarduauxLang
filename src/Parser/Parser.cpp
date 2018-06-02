@@ -510,20 +510,30 @@ ExprPtr Parser::assignableExprParse()
 {
 	std::unique_ptr<AssignableExpression> assnable_expr = std::make_unique<AssignableExpression>(std::move(multpExprParse()));
 	
-	while (isAcceptable(Type::ADD_OP) || isAcceptable (Type::SUB_OP) ){
-		assnable_expr->addMultExpr(std::move(multpExprParse()), lexer_->currentToken().type_);
+	while (lexer_->currentToken().type_ == (Type::ADD_OP) || lexer_->currentToken().type_ == (Type::SUB_OP) ){
+		if( isAcceptable(Type::ADD_OP) ){
+			assnable_expr->addMultExpr(std::move(multpExprParse()), TokenType::ADD_OP);
+		}
+		else if (  isAcceptable(Type::SUB_OP) ) {
+			assnable_expr->addMultExpr(std::move(multpExprParse()), TokenType::SUB_OP);
+		}
+
 	}
 	return std::move(assnable_expr);
 }
 
 ExprPtr Parser::multpExprParse()
 {
-	ExprPtr exr = std::move(simplAssnbleExprParse());
 	std::unique_ptr<MultipExpression> assnable_expr = std::make_unique<MultipExpression>(
-			std::move(exr));
+			std::move(simplAssnbleExprParse()));
 
-	while (isAcceptable(Type::MUL_OP) || isAcceptable (Type::DIV_OP) ){
-		assnable_expr->addSimpleAssignExpr(std::move(simplAssnbleExprParse()), lexer_->currentToken().type_);
+	while (lexer_->currentToken().type_ == (Type::MUL_OP) || lexer_->currentToken().type_ ==  (Type::DIV_OP) ){
+		if(isAcceptable(TokenType::MUL_OP)) {
+			assnable_expr->addSimpleAssignExpr(std::move(simplAssnbleExprParse()), Type::MUL_OP);
+		}
+		else if(isAcceptable(TokenType::DIV_OP)) {
+			assnable_expr->addSimpleAssignExpr(std::move(simplAssnbleExprParse()), Type::DIV_OP);
+		}
 	}
 	return std::move(assnable_expr);
 

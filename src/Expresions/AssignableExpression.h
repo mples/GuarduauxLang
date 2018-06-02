@@ -18,15 +18,15 @@ namespace Guarduaux {
         std::shared_ptr<Variable> calculate() override {
 		    auto it = multipExprList_.begin();
             std::shared_ptr<Variable> ret_var = it->get()->calculate();
-
+			multipExprList_.pop_front();
 
 			for( const TokenType& t : addativOperatorList_){
 				if(t == TokenType::ADD_OP){
-					*ret_var = *ret_var + *(multipExprList_.begin()->get()->calculate());
+					ret_var = ret_var->add(multipExprList_.begin()->get()->calculate());
                     multipExprList_.pop_front();
 				}
 				else {
-					*ret_var = *ret_var - *(multipExprList_.begin()->get()->calculate());
+					ret_var = ret_var->sub(multipExprList_.begin()->get()->calculate());
                     multipExprList_.pop_front();
 				}
 			}
@@ -35,7 +35,7 @@ namespace Guarduaux {
 		}
 
 
-		void addMultExpr(ExprPtr multp_expr, TokenType add_op = TokenType::UNIDENTIFIED) {
+		void addMultExpr(ExprPtr multp_expr, TokenType add_op ) {
 			multipExprList_.push_back(std::move(multp_expr));
 			addativOperatorList_.push_back(add_op);
 		}
@@ -43,13 +43,5 @@ namespace Guarduaux {
 	private:
 		std::list<ExprPtr> multipExprList_;
 		std::list<TokenType> addativOperatorList_;
-	public:
-		const std::list<ExprPtr> &getMultipExprList_() const {
-			return multipExprList_;
-		}
-
-		const std::list<TokenType> &getAddativOperatorList_() const {
-			return addativOperatorList_;
-		}
 	};
 }

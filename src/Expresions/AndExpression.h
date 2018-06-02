@@ -20,7 +20,7 @@ namespace Guarduaux {
             std::shared_ptr<Variable> ret_var = relatExprList_.begin()->get()->calculate();
             relatExprList_.pop_front();
             while( !relatExprList_.empty()){
-                *ret_var = *ret_var && *(relatExprList_.begin()->get()->calculate());
+				ret_var = ret_var->and_op(relatExprList_.begin()->get()->calculate());
                 relatExprList_.pop_front();
             }
 

@@ -38,6 +38,28 @@ namespace Guarduaux {
         Variable& operator>(const Variable &other) const;
         Variable& operator>=(const Variable &other) const;
 
+
+        std::shared_ptr<Variable> add(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> sub(std::shared_ptr<Variable> other);
+
+		std::shared_ptr<Variable> mul(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> div(std::shared_ptr<Variable> other);
+
+		std::shared_ptr<Variable> equ(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> neq(std::shared_ptr<Variable> other);
+
+		std::shared_ptr<Variable> negate();
+
+		std::shared_ptr<Variable> lth(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> loe(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> gth(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> goe(std::shared_ptr<Variable> other);
+
+		std::shared_ptr<Variable> and_op(std::shared_ptr<Variable> other);
+		std::shared_ptr<Variable> or_op(std::shared_ptr<Variable> other);
+		bool isTrue();
+
+
         Variable& operator&&(const Variable &other) const;
         operator bool() const;
 

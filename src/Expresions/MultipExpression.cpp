@@ -8,17 +8,16 @@ MultipExpression::MultipExpression(ExprPtr simpl_assnb_expr) {
 }
 
 std::shared_ptr<Variable> MultipExpression::calculate() {
-    auto it = multipExprVec_.begin();
-    std::shared_ptr<Variable> ret_var = it->get()->calculate();
+    std::shared_ptr<Variable> ret_var = multipExprVec_.begin()->get()->calculate();
     multipExprVec_.pop_front();
 
     for( const TokenType& t : addativOperatorVec_){
         if(t == TokenType::MUL_OP){
-            *ret_var = *ret_var * (*multipExprVec_.begin()->get()->calculate());
+            ret_var = ret_var->mul(multipExprVec_.begin()->get()->calculate());
             multipExprVec_.pop_front();
         }
         else {
-            *ret_var = *ret_var / (*multipExprVec_.begin()->get()->calculate());
+            ret_var = ret_var->div(multipExprVec_.begin()->get()->calculate());
             multipExprVec_.pop_front();
         }
     }
