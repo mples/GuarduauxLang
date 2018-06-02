@@ -60,7 +60,6 @@ namespace Guarduaux {
 		bool isTrue();
 
 
-        Variable& operator&&(const Variable &other) const;
         operator bool() const;
 
 		int& get(int i = 0);

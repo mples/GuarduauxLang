@@ -25,6 +25,10 @@
 #include "Expresions/MultipExpression.h"
 #include "Statements/GraphFunc.h"
 #include "Statements/ReturnStatement.h"
+#include "Statements/DrawGraphicFunc.h"
+#include "Statements/ScaleGraphFunc.h"
+#include "Statements/MoveGraphFunc.h"
+#include "Statements/ChngcolGraphFunc.h"
 
 using namespace Guarduaux;
 
@@ -345,7 +349,7 @@ StatemPtr Parser::assignOrGraphicStatemParse(Token token)
 		ret_state = std::move(assignStatemParse(token, std::move(index_expr )));
 	}
 	else if (isAcceptable(Type::DRAW) || isAcceptable(Type::MOVE) || isAcceptable(Type::SCALE) || isAcceptable(Type::CHNGCOL)){
-		ret_state = std::move(graphicStatemParse(graph_ident, std::move(index_expr)) );
+		ret_state = std::move(graphicStatemParse(graph_ident, token, std::move(index_expr)) );
 	}
 	else
 	{
@@ -372,12 +376,12 @@ StatemPtr Parser::assignStatemParse(Token token, ExprPtr index)
 	return std::move(assign_statem);
 }
 
-StatemPtr Parser::graphicStatemParse(Token token, ExprPtr index)
+StatemPtr Parser::graphicStatemParse(Token token, Token var_name ,ExprPtr index)
 {
 	StatemPtr graph_func;
 
 	if(token.type_ == Type::DRAW) {
-		graph_func = std::move(drawFuncParse(token, std::move(index)));
+		graph_func = std::move(drawFuncParse(var_name, std::move(index)));
 	}
 	else if(token.type_ == Type::SCALE || token.type_ == Type::CHNGCOL || token.type_ == Type::MOVE){
 		graph_func = std::move(otherGrpahFunParse(token, std::move(index)));
@@ -388,23 +392,24 @@ StatemPtr Parser::graphicStatemParse(Token token, ExprPtr index)
 
 StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 {
-	std::unique_ptr<GraphFunc> graph_func;
+    std::vector<std::unique_ptr<Expresion> > position;
+    std::vector<std::unique_ptr<Expresion> > dimension;
+    std::vector<std::unique_ptr<Expresion> > color;
 
 	std::string func_type = lexer_->currentToken().value_;
 
 	isAcceptableOrThrow(Type::POS);
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
-	graph_func = std::make_unique<GraphFunc>(func_type);
-	graph_func->addParam(std::move(logicExprParse()));
+	position.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    position.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    position.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
@@ -412,15 +417,15 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 	isAcceptableOrThrow(Type::COL);
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
-	graph_func->addParam(std::move(logicExprParse()));
+	color.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    color.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    color.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
@@ -428,46 +433,97 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 	isAcceptableOrThrow(Type::DIM);
 	isAcceptableOrThrow(Type::RND_BR_OP);
 
-	graph_func->addParam(std::move(logicExprParse()));
+	dimension.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    dimension.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::COMMA);
 
-	graph_func->addParam(std::move(logicExprParse()));
+    dimension.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
-
-	return graph_func;
+	return std::move(std::make_unique<DrawGraphicFunc>(func_type, std::move(position), std::move(dimension), std::move(color) ));
 }
 
 StatemPtr Parser::otherGrpahFunParse(Token token, ExprPtr index)
 {
 	std::unique_ptr<GraphFunc> graph_func;
-	if ( token.type_ == Type::SCALE || token.type_ == Type::MOVE || token.type_ == Type::CHNGCOL) {
-		std::string func_type = lexer_->currentToken().value_;
-		isAcceptableOrThrow(Type::RND_BR_OP);
-
-		graph_func = std::make_unique<GraphFunc>(func_type);
-
-		graph_func->addParam(std::move(logicExprParse()));
-
-		isAcceptableOrThrow(Type::COMMA);
-
-		graph_func->addParam(std::move(logicExprParse()));
-
-		isAcceptableOrThrow(Type::COMMA);
-
-		graph_func->addParam(std::move(logicExprParse()));
-
-
-		isAcceptableOrThrow(Type::RND_BR_CL);
-
+	if(token.type_ == Type::SCALE){
+		return std::move(scaleFuncParse(token, std::move(index) ));
 	}
-	return graph_func;
+	else if(token.type_ == Type::MOVE){
+		return std::move(moveFuncParse(token, std::move(index) ));
+	}
+	else if(token.type_ == Type::CHNGCOL){
+		return std::move(chngcolFuncParse(token, std::move(index) ));
+	}
+	else {
+		WrongTokenException(token, { Type::DRAW, Type::SCALE, Type::CHNGCOL, Type::MOVE });
+	}
+}
+
+StatemPtr Parser::scaleFuncParse(Token var_name, ExprPtr index) {
+
+	std::vector<std::unique_ptr<Expresion> > coord;
+
+	isAcceptableOrThrow(Type::RND_BR_OP);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::RND_BR_CL);
+
+	return std::move(std::make_unique<ScaleGraphicFunc>(var_name.value_, std::move(coord)));
+}
+
+StatemPtr Parser::moveFuncParse(Token var_name, ExprPtr index) {
+	std::vector<std::unique_ptr<Expresion> > coord;
+
+	isAcceptableOrThrow(Type::RND_BR_OP);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	coord.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::RND_BR_CL);
+
+	return std::move(std::make_unique<MoveGraphicFunc>(var_name.value_, std::move(coord)));
+}
+
+StatemPtr Parser::chngcolFuncParse(Token var_name, ExprPtr index) {
+	std::vector<std::unique_ptr<Expresion> > col;
+
+	isAcceptableOrThrow(Type::RND_BR_OP);
+
+	col.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	col.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::COMMA);
+
+	col.push_back(std::move(logicExprParse()));
+
+	isAcceptableOrThrow(Type::RND_BR_CL);
+
+	return std::move(std::make_unique<ChngcolGraphicFunc>(var_name.value_, std::move(col)));
 }
 
 ExprPtr Parser::logicExprParse()
@@ -635,5 +691,7 @@ std::unique_ptr<Variable> Parser::numberParse() {
 
 
 }
+
+
 
 

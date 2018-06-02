@@ -59,8 +59,11 @@ namespace Guarduaux {
 
 		StatemPtr assignOrGraphicStatemParse(Token token);
 		StatemPtr assignStatemParse(Token token, ExprPtr index);
-		StatemPtr graphicStatemParse(Token token, ExprPtr index);
-		StatemPtr drawFuncParse(Token token, ExprPtr index);
+		StatemPtr graphicStatemParse(Token token, Token var_name, ExprPtr index);
+		StatemPtr drawFuncParse(Token var_name, ExprPtr index);
+		StatemPtr scaleFuncParse(Token var_name, ExprPtr index);
+		StatemPtr moveFuncParse(Token var_name, ExprPtr index);
+		StatemPtr chngcolFuncParse(Token var_name, ExprPtr index);
 		StatemPtr otherGrpahFunParse(Token token, ExprPtr index);
 		StatemPtr returnStatemParse();
 
