@@ -25,10 +25,13 @@ namespace Guarduaux {
         void updateObj(std::string& obj_name, std::shared_ptr<GraphicObject> obj);
 
         void addObj(std::string& obj_name, Token obj_type);
+        std::shared_ptr<GraphicObject> findObj(std::string & name);
 
 
     private:
         std::unordered_map < std::string, std::shared_ptr<GraphicObject> > graphObjects_;
+    public:
+        const std::unordered_map<std::string, std::shared_ptr<GraphicObject>> &getGraphObjects_() const;
     };
 
 }

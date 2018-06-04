@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include "Statements/BlockStatement.h"
+#include "GraphicContext.h"
 
 namespace Guarduaux {
 
@@ -34,7 +35,9 @@ namespace Guarduaux {
 			return identifier_;
 		}
 
-
+		std::shared_ptr<GraphicContext> getGraphicContext_(){
+			return funcBlock_->getContext_()->getGraphicContext_();
+		}
 
 		unsigned int paramCount(){
 			return parameters_.size();
@@ -53,6 +56,7 @@ namespace Guarduaux {
 
 		Return run(){
 			return funcBlock_->run();
+
 		}
 
 	private:

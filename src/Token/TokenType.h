@@ -38,7 +38,7 @@ namespace Guarduaux {
 		FOR, FOR_EAC,
 
 		DRAW, SCALE, MOVE, CHNGCOL,
-		BOX, SPHERE,
+		BOX, CYLINDER,
 		POS, COL, DIM,
 
 		IDENTIFIER,

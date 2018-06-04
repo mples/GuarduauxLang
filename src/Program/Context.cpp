@@ -69,5 +69,13 @@ void Context::addObj(std::string &obj_name, Token obj_type) {
     graphicContext_->addObj(obj_name,obj_type);
 }
 
+std::shared_ptr<GraphicContext> Context::getGraphicContext_(){
+    return graphicContext_;
+}
+
+std::shared_ptr<GraphicObject> Context::findObj(std::string var_name) {
+    graphicContext_->findObj(var_name);
+}
+
 
 

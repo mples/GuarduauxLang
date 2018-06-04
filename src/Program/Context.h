@@ -31,7 +31,7 @@ namespace Guarduaux {
         void updateObj(std::string& obj_name, std::shared_ptr<GraphicObject> obj);
         void addObj(std::string& obj_name, Token obj_type);
 
-
+        std::shared_ptr<GraphicObject> findObj(std::string var_name);
         std::shared_ptr<Variable> findVar(std::string var_name);
 
         bool isValidVar( std::string& var_name);
@@ -39,6 +39,8 @@ namespace Guarduaux {
     private:
         std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
         std::shared_ptr<GraphicContext> graphicContext_;
+    public:
+        std::shared_ptr<GraphicContext> getGraphicContext_() ;
     };
 
 }

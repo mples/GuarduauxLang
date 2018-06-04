@@ -64,7 +64,7 @@ namespace Guarduaux {
 		StatemPtr scaleFuncParse(Token var_name, ExprPtr index);
 		StatemPtr moveFuncParse(Token var_name, ExprPtr index);
 		StatemPtr chngcolFuncParse(Token var_name, ExprPtr index);
-		StatemPtr otherGrpahFunParse(Token token, ExprPtr index);
+		StatemPtr otherGrpahFunParse(Token token,Token var_name, ExprPtr index);
 		StatemPtr returnStatemParse();
 
 

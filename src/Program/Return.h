@@ -22,7 +22,8 @@ namespace Guarduaux {
 
 		explicit Return( std::string obj_name, std::shared_ptr<GraphicObject> object){
 			type_ = Type::OBJECT;
-			objName = obj_name;
+			objName = std::move(obj_name);
+			object_ = std::move(object);
 		}
 
 

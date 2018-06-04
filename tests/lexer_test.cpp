@@ -125,7 +125,7 @@ TEST_CASE("lexer_tests"){
         Token token = Token::unidentifiedType();
         Lexer lexer(iss);
 
-        iss.str("draw box pos dim col scale sphere chngcol move");
+        iss.str("draw box pos dim col scale cylinder chngcol move");
 
         token = lexer.getToken();
         REQUIRE(token.type_ == Type::DRAW);
@@ -152,8 +152,8 @@ TEST_CASE("lexer_tests"){
         REQUIRE(token.value_ == "scale");
 
         token = lexer.getToken();
-        REQUIRE(token.type_ == Type::SPHERE);
-        REQUIRE(token.value_ == "sphere");
+        REQUIRE(token.type_ == Type::CYLINDER);
+        REQUIRE(token.value_ == "cylinder");
 
         token = lexer.getToken();
         REQUIRE(token.type_ == Type::CHNGCOL);

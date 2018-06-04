@@ -13,7 +13,7 @@
 namespace Guarduaux {
     class ChngcolGraphicFunc : public Statement {
     public:
-        ChngcolGraphicFunc(std::string obj,
+        ChngcolGraphicFunc(std::shared_ptr<GraphicObject>obj,
                         std::vector<std::unique_ptr<Expresion> > col ) {
             graphicObj_ = obj;
             color_ = std::move(col);
@@ -25,7 +25,7 @@ namespace Guarduaux {
         }
 
     private:
-        std::string graphicObj_;
+        std::shared_ptr<GraphicObject> graphicObj_;
         std::vector<std::unique_ptr<Expresion> > color_;
     };
 }

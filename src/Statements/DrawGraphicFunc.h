@@ -10,6 +10,8 @@
 #include "Statement.h"
 #include "Expresions/Expresion.h"
 #include "../Graphic/Box.h"
+#include "../Graphic/Cylinder.h"
+
 namespace Guarduaux {
     class DrawGraphicFunc : public Statement {
     public:
@@ -44,13 +46,13 @@ namespace Guarduaux {
                 col.push_back(ex->calculate()->get());
             }
 
-            std::shared_ptr<Box> figure;
+            std::shared_ptr<GraphicObject> figure;
 
             if(graphicObj_ == "box"){
                 figure = std::make_shared<Box>(pos,col,dim);
             }
             else {
-                //TODO
+                figure = std::make_shared<Cylinder>(pos,col,dim);
             }
 
 

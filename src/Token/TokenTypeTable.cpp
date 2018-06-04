@@ -48,7 +48,7 @@ const  std::string Guarduaux::TokenTypeTable::getName(const TokenType & type)
 		{ TokenType::MOVE,		"move keyword"  },
 		{ TokenType::CHNGCOL,	"chngcol keyword" },
 		{ TokenType::BOX,		"box keyword" },
-		{ TokenType::SPHERE,	"sphere keyword" },
+		{ TokenType::CYLINDER,	"cylinder keyword" },
 		{ TokenType::POS,		"pos keyword" },
 		{ TokenType::COL,		"col keyword" },
 		{ TokenType::DIM,		"dim keyword" },

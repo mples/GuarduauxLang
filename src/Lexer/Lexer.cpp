@@ -128,7 +128,7 @@ void Guarduaux::Lexer::tryKeyword() {
 			{"move", TokenType::MOVE },
 			{"chngcol", TokenType::CHNGCOL },
 			{"box", TokenType::BOX },
-			{"sphere", TokenType::SPHERE },
+			{"cylinder", TokenType::CYLINDER },
 			{"dim", TokenType::DIM },
 			{"col", TokenType::COL },
 			{"pos", TokenType::POS }

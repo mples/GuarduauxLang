@@ -5,6 +5,7 @@
 #include "GraphicContext.h"
 
 #include "Graphic/Box.h"
+#include "Graphic/Cylinder.h"
 
 Guarduaux::GraphicContext::GraphicContext() {}
 
@@ -18,11 +19,12 @@ Guarduaux::GraphicContext::GraphicContext(const Guarduaux::GraphicContext &&othe
 }
 
 void Guarduaux::GraphicContext::updateObj(std::string &obj_name, std::shared_ptr<Guarduaux::GraphicObject> obj) {
+    //graphObjects_.insert_or_assign(obj_name,obj);
 
     if(graphObjects_.find(obj_name) != graphObjects_.end()){
-        std::shared_ptr<GraphicObject> found_obj = graphObjects_.at(obj_name);
-        *found_obj = *obj;
+        (graphObjects_.at(obj_name) ) = std::move(obj);
     }
+
 }
 
 void Guarduaux::GraphicContext::addObj(std::string &obj_name, Token obj_type) {
@@ -30,8 +32,19 @@ void Guarduaux::GraphicContext::addObj(std::string &obj_name, Token obj_type) {
         graphObjects_.insert(std::make_pair(obj_name, std::make_shared<Box>()));
     }
     else {
-        //TODO
+        graphObjects_.insert(std::make_pair(obj_name, std::make_shared<Cylinder>() ));
     }
 
+}
+
+const std::unordered_map<std::string, std::shared_ptr<Guarduaux::GraphicObject>> &
+Guarduaux::GraphicContext::getGraphObjects_() const {
+    return graphObjects_;
+}
+
+std::shared_ptr<Guarduaux::GraphicObject> Guarduaux::GraphicContext::findObj(std::string &name) {
+    if(graphObjects_.count(name)){
+        return graphObjects_.at(name);
+    }
 }
 

@@ -273,12 +273,38 @@ TEST_CASE( "function_tests" ) {
                           "func scene() {"
                           "a=2;"
                           "tkom(a)~(2);"
+                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+                          "cyl draw cylinder pos(0,0,1) col(1,1,0) dim(123,43,15);"
                           "return a;"
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
                 Return result = progr.run();
                 REQUIRE(result.variable_->get() == 2 );
+                progr.renderScene();
+            }
+        }
+
+        WHEN("Calling other function than scene") {
+
+            THEN("func is found") {
+                stream << "func tkom(a) {"
+                          "return a+5;"
+                          "}"
+                          "func scene() {"
+                          "a=2;"
+                          "tkom(a)~(2);"
+                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+                          "cyl draw cylinder pos(0,0,1) col(1,1,0) dim(123,43,15);"
+                          //"cyl move (1,1,1);"
+                          //"boks scale(5,1,1);"
+                          "return a;"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                Return result = progr.run();
+                REQUIRE(result.variable_->get() == 2 );
+                progr.renderScene();
             }
         }
 

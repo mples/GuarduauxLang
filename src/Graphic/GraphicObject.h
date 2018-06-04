@@ -11,6 +11,12 @@ namespace Guarduaux{
         virtual ~GraphicObject() = default;
 
         virtual void draw() = 0;
+
+        virtual void move(std::vector<int> vec) = 0;
+
+        virtual void scale(std::vector<int> vec) = 0;
+
+        virtual void chngcol(std::vector<int> vec) = 0;
     };
 }
 

@@ -13,31 +13,19 @@ namespace Guarduaux {
 	public:
 		Program() = default;
 
-		void addFunc(std::unique_ptr<FuncDef> function){
-			functions.insert({function->getId(), std::move(function)});
-		}
+		void addFunc(std::unique_ptr<FuncDef> function);
 
-		bool isVaildFunc(const std::string & func_name){
-			return functions.find(func_name) != functions.end();
-		}
+		bool isVaildFunc(const std::string & func_name);
 
-		std::shared_ptr<FuncDef> getFuncDef(const std::string & func_name) {
-			return functions.at(func_name);
-		}
+		std::shared_ptr<FuncDef> getFuncDef(const std::string & func_name);
 
-		Return run(){
-			auto scene_func = functions.find("scene");
-			if(scene_func != functions.end()){
-				return scene_func->second->run();
-			}
-			else {
-				throw Exception("No scene function");
-			}
+		Return run();
 
-		}
+		void renderScene();
 
 	private:
 		std::unordered_map<std::string, std::shared_ptr<FuncDef> > functions;
+		std::shared_ptr<GraphicContext> graphicContext_;
 	};
 
 }
