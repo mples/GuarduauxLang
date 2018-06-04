@@ -22,12 +22,13 @@ namespace Guarduaux {
 
 
         Return run() override{
-            std::vector<int> move_vec = {
+            std::vector<int> vec = {
                     coordinates_.at(0)->calculate()->get(),
                     coordinates_.at(1)->calculate()->get(),
                     coordinates_.at(2)->calculate()->get()
             };
-            graphicObj_->scale(move_vec);
+            if(graphicObj_)
+                graphicObj_->scale(vec);
             return Return();
         }
 

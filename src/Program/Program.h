@@ -19,9 +19,13 @@ namespace Guarduaux {
 
 		std::shared_ptr<FuncDef> getFuncDef(const std::string & func_name);
 
-		Return run();
+		Return generateScene();
 
 		void renderScene();
+
+		void initScene();
+
+		void render();
 
 	private:
 		std::unordered_map<std::string, std::shared_ptr<FuncDef> > functions;

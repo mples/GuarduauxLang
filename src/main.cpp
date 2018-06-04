@@ -4,21 +4,41 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "Parser/Parser.h"
+#include "Program/Program.h"
 
 
 using namespace Guarduaux;
 
-int main() {
-    std::cout << "Hello Guarduaux" << std::endl;
+int main(int argc, char** argv) {
 
-    std::string streamValue = " ";
-    std::stringstream stream(streamValue);
-    std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>(stream);
-    Parser parser(std::move(lexer));
+    Parser parser;
+    Program prog;
+    std::fstream file;
 
-    stream << " a = a;";
+    if(argc == 2) {
+        file.open(argv[1], std::ios::in);
+        if(!file.good()) {
+            std::cout << "file not found\n";
+            return -1;
+        }
+        try {
+            parser.setLexer(std::make_unique<Lexer>(file));
+            prog = parser.parse();
+            prog.generateScene();
+            prog.render();
 
-    parser.parse();
+        } catch (Exception &e) {
+            //std::cout << e.what() << std::endl;
+        } catch (std::exception &e) {
+            std::cout << e.what() << std::endl;
+        }
+        file.close();
+    } else {
+        std:: cout << "Put file path in argument\n";
+    }
+
+    return 0;
 
 }

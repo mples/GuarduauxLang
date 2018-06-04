@@ -10,6 +10,8 @@ namespace Guarduaux{
     public:
         virtual ~GraphicObject() = default;
 
+        virtual void init() = 0;
+
         virtual void draw() = 0;
 
         virtual void move(std::vector<int> vec) = 0;

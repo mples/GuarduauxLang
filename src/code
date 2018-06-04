@@ -1,0 +1,12 @@
+func tkom(a) {
+    return a+5;
+}
+func scene() {
+    a=2;
+    tkom(a)~(2);
+    boks draw box pos(50,2,60) col(0,100,0) dim(100,100,100);
+    cyl draw cylinder pos(50,0,1) col(1,1,0) dim(123,43,15);
+    cyl move (1,1,1);
+    boks scale(5,1,1);
+    return a;
+}

@@ -7,12 +7,18 @@
 
 #include <vector>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
 #include "GraphicObject.h"
 namespace Guarduaux {
     class Cylinder : public GraphicObject {
     public:
         Cylinder() = default;
         Cylinder(std::vector<int> pos,std::vector<int> col, std::vector<int> dim );
+
+        void init() override ;
         void draw () override ;
 
         void move(std::vector<int> vec) override ;
@@ -22,6 +28,12 @@ namespace Guarduaux {
         std::vector<int> pos_;
         std::vector<int> col_;
         std::vector<int> dim_;
+
+        GLuint VAO;
+        GLuint VBO;
+        std::vector<GLfloat> cylinCoord_;
+
+        void initCylinCoord();
     };
 
 }

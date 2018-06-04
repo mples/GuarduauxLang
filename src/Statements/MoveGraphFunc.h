@@ -17,7 +17,6 @@ namespace Guarduaux {
         MoveGraphicFunc(std::shared_ptr<GraphicObject> obj,
                          std::vector<std::unique_ptr<Expresion> > coord )
         {
-            //graphicObj_ = std::move(obj);
             coordinates_ = std::move(coord);
             graphicObj_ = obj;
         }
@@ -29,7 +28,9 @@ namespace Guarduaux {
                     coordinates_.at(1)->calculate()->get(),
                     coordinates_.at(2)->calculate()->get()
             };
-            graphicObj_->move(move_vec);
+
+            if(graphicObj_)
+                graphicObj_->move(move_vec);
             return Return();
         }
 

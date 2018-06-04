@@ -57,7 +57,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 3 );
+                REQUIRE(progr.generateScene().variable_->get() == 3 );
             }
         }
 
@@ -70,7 +70,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE_THROWS(progr.run().variable_->get() == 1 );
+                REQUIRE_THROWS(progr.generateScene().variable_->get() == 1 );
             }
         }
 
@@ -83,7 +83,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 9 );
+                REQUIRE(progr.generateScene().variable_->get() == 9 );
             }
         }
 
@@ -96,7 +96,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 0 );
+                REQUIRE(progr.generateScene().variable_->get() == 0 );
             }
         }
 
@@ -109,7 +109,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 1 );
+                REQUIRE(progr.generateScene().variable_->get() == 1 );
             }
         }
 
@@ -122,7 +122,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 1 );
+                REQUIRE(progr.generateScene().variable_->get() == 1 );
             }
         }
 
@@ -135,7 +135,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 0 );
+                REQUIRE(progr.generateScene().variable_->get() == 0 );
             }
         }
         WHEN("Program contains multiple function") {
@@ -149,7 +149,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 0 );
+                REQUIRE(progr.generateScene().variable_->get() == 0 );
             }
         }
 
@@ -167,7 +167,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 1 );
+                REQUIRE(progr.generateScene().variable_->get() == 1 );
             }
         }
 
@@ -186,7 +186,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 8 );
+                REQUIRE(progr.generateScene().variable_->get() == 8 );
             }
         }
 
@@ -205,7 +205,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 6 );
+                REQUIRE(progr.generateScene().variable_->get() == 6 );
             }
         }
 
@@ -224,7 +224,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 8 );
+                REQUIRE(progr.generateScene().variable_->get() == 8 );
             }
         }
 
@@ -241,7 +241,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                REQUIRE(progr.run().variable_->get() == 9 );
+                REQUIRE(progr.generateScene().variable_->get() == 9 );
             }
         }
 
@@ -259,7 +259,7 @@ TEST_CASE( "function_tests" ) {
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                Return result = progr.run();
+                Return result = progr.generateScene();
                 REQUIRE(result.variable_->get() == 15 );
             }
         }
@@ -273,15 +273,14 @@ TEST_CASE( "function_tests" ) {
                           "func scene() {"
                           "a=2;"
                           "tkom(a)~(2);"
-                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+                          "boks draw box pos(50,2,1) col(0,0,1) dim(1,1,1);"
                           "cyl draw cylinder pos(0,0,1) col(1,1,0) dim(123,43,15);"
                           "return a;"
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                Return result = progr.run();
+                Return result = progr.generateScene();
                 REQUIRE(result.variable_->get() == 2 );
-                progr.renderScene();
             }
         }
 
@@ -294,17 +293,17 @@ TEST_CASE( "function_tests" ) {
                           "func scene() {"
                           "a=2;"
                           "tkom(a)~(2);"
-                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
-                          "cyl draw cylinder pos(0,0,1) col(1,1,0) dim(123,43,15);"
-                          //"cyl move (1,1,1);"
-                          //"boks scale(5,1,1);"
+                          "boks draw box pos(50,2,60) col(0,100,0) dim(100,100,100);"
+                          "cyl draw cylinder pos(50,0,1) col(1,1,0) dim(123,43,15);"
+                          "cyl move (1,1,1);"
+                          "boks scale(5,1,1);"
                           "return a;"
                           "}";
                 Program progr = parser.parse();
                 REQUIRE(progr.isVaildFunc("tkom"));
-                Return result = progr.run();
+                Return result = progr.generateScene();
                 REQUIRE(result.variable_->get() == 2 );
-                progr.renderScene();
+                progr.render();
             }
         }
 

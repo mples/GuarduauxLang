@@ -21,7 +21,14 @@ namespace Guarduaux {
 
 
         Return run() override{
-            //TODO
+            std::vector<int> vec = {
+                    color_.at(0)->calculate()->get(),
+                    color_.at(1)->calculate()->get(),
+                    color_.at(2)->calculate()->get()
+            };
+            if(graphicObj_)
+                graphicObj_->chngcol(vec);
+            return Return();
         }
 
     private:
