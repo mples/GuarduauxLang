@@ -9,15 +9,17 @@
 #include <memory>
 #include "Statement.h"
 #include "Expresions/Expresion.h"
-
+#include "../Graphic/Box.h"
 namespace Guarduaux {
     class DrawGraphicFunc : public Statement {
     public:
         DrawGraphicFunc(std::string obj,
+                        std::string obj_name,
                         std::vector<std::unique_ptr<Expresion> > pos,
                         std::vector<std::unique_ptr<Expresion> >dim,
                         std::vector<std::unique_ptr<Expresion> > col ) {
             graphicObj_ = obj;
+            objName_ = obj_name;
             position_ = std::move(pos);
             dimension_ = std::move(dim);
             color_ = std::move(col);
@@ -25,11 +27,39 @@ namespace Guarduaux {
 
 
         Return run() override{
-            //TODO
+
+            std::vector<int> pos;
+            std::vector<int> col;
+            std::vector<int> dim;
+
+            for(const auto & ex : position_){
+                pos.push_back(ex->calculate()->get());
+            }
+
+            for(const auto & ex : dimension_){
+                dim.push_back(ex->calculate()->get());
+            }
+
+            for(const auto & ex : color_){
+                col.push_back(ex->calculate()->get());
+            }
+
+            std::shared_ptr<Box> figure;
+
+            if(graphicObj_ == "box"){
+                figure = std::make_shared<Box>(pos,col,dim);
+            }
+            else {
+                //TODO
+            }
+
+
+            return Return(objName_, figure);
         }
 
     private:
         std::string graphicObj_;
+        std::string objName_;
         std::vector<std::unique_ptr<Expresion> > position_;
         std::vector<std::unique_ptr<Expresion> > dimension_;
         std::vector<std::unique_ptr<Expresion> > color_;

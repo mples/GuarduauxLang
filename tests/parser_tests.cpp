@@ -220,6 +220,18 @@ TEST_CASE( "parser_tests" ) {
                 REQUIRE_NOTHROW(parser.parse());
             }
         }
+
+        WHEN("Correct graph function  statment definition") {
+
+            THEN("works - Contain main function") {
+                stream << "func scene() {"
+                          "kula move(1 , 2 , 3);"
+                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+                          "}";
+
+                REQUIRE_NOTHROW(parser.parse());
+            }
+        }
     }
 
     SECTION("If  Statment parse"){

@@ -69,7 +69,10 @@ namespace Guarduaux {
 		Return run() override{
             for(const auto & func : instructions_){
                 Return ret = func->run();
-                if(ret.type_ == Return::VARIABLE){
+				if(ret.type_ == Return::OBJECT){
+					context_->updateObj(ret.objName,ret.object_);
+				}
+                else if(ret.type_ == Return::VARIABLE){
                     return ret;
                 }
             }

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Variable.h"
-
+#include "Graphic/GraphicObject.h"
 namespace Guarduaux {
 
 	struct Return {
 		enum Type {
 			NONE,
 			VARIABLE,
+			OBJECT
 		};
 
 		explicit Return(){
@@ -19,7 +20,15 @@ namespace Guarduaux {
 			variable_ = variable;
 		}
 
+		explicit Return( std::string obj_name, std::shared_ptr<GraphicObject> object){
+			type_ = Type::OBJECT;
+			objName = obj_name;
+		}
+
+
 		Type type_;
 		std::shared_ptr<Variable> variable_;
+		std::shared_ptr<GraphicObject> object_;
+		std::string objName;
 	};
 }

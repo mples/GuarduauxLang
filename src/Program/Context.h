@@ -10,6 +10,8 @@
 #include "Program/Variable.h"
 #include "Expresions/Expresion.h"
 
+#include "GraphicContext.h"
+
 using ExprPtr = std::unique_ptr<Guarduaux::Expresion>;
 
 namespace Guarduaux {
@@ -26,12 +28,17 @@ namespace Guarduaux {
         void addVar(std::string& var_name, std::shared_ptr<Variable> var);
         void updateVars(std::unordered_map < std::string, std::shared_ptr<Variable> > params);
 
+        void updateObj(std::string& obj_name, std::shared_ptr<GraphicObject> obj);
+        void addObj(std::string& obj_name, Token obj_type);
+
+
         std::shared_ptr<Variable> findVar(std::string var_name);
 
         bool isValidVar( std::string& var_name);
 
     private:
         std::unordered_map < std::string, std::shared_ptr<Variable> > variables_;
+        std::shared_ptr<GraphicContext> graphicContext_;
     };
 
 }

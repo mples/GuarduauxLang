@@ -396,7 +396,16 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
     std::vector<std::unique_ptr<Expresion> > dimension;
     std::vector<std::unique_ptr<Expresion> > color;
 
-	std::string func_type = lexer_->currentToken().value_;
+	Token func_type = lexer_->currentToken();
+
+	Token graph_obj_type = Token::unidentifiedType();
+
+	if(isAcceptable(Type::BOX) || isAcceptable(Type::SPHERE)){
+	    graph_obj_type = lexer_->currentToken();
+	}
+	else {
+	    throw WrongTokenException(lexer_->currentToken(), {Type::BOX, Type::SPHERE});
+	}
 
 	isAcceptableOrThrow(Type::POS);
 	isAcceptableOrThrow(Type::RND_BR_OP);
@@ -445,7 +454,9 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 
 	isAcceptableOrThrow(Type::RND_BR_CL);
 
-	return std::move(std::make_unique<DrawGraphicFunc>(func_type, std::move(position), std::move(dimension), std::move(color) ));
+	currContext_->addObj(token.value_, func_type);
+
+	return std::move(std::make_unique<DrawGraphicFunc>(func_type.value_ ,token.value_, std::move(position), std::move(dimension), std::move(color) ));
 }
 
 StatemPtr Parser::otherGrpahFunParse(Token token, ExprPtr index)

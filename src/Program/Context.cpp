@@ -6,20 +6,25 @@
 
 using namespace Guarduaux;
 
-Context::Context() {}
+Context::Context() {
+    graphicContext_ = std::make_shared<GraphicContext>();
+}
 
 Context::Context(std::vector<std::string> &params ){
     for(auto& par : params){
         addVar(par);
     }
+    graphicContext_ = std::make_shared<GraphicContext>(); //TODO FIX
 }
 
 Context::Context(const Context &&other)noexcept {
-    variables_ = std::move(other.variables_);
+    variables_ = other.variables_;
+    graphicContext_ = other.graphicContext_;
 }
 
 Context::Context(const Context *other) {
-    variables_ = std::move(other->variables_);
+    variables_ = other->variables_;
+    graphicContext_ = other->graphicContext_;
 }
 
 void Context::addVar(std::string &var_name) {
@@ -53,6 +58,15 @@ void Context::updateVars(std::unordered_map<std::string, std::shared_ptr<Variabl
         *var = *p.second;
         //variables_.insert_or_assign(p.first, p.second);
     }
+}
+
+void Context::updateObj(std::string &obj_name, std::shared_ptr<GraphicObject> obj) {
+    graphicContext_->updateObj(obj_name, obj);
+
+}
+
+void Context::addObj(std::string &obj_name, Token obj_type) {
+    graphicContext_->addObj(obj_name,obj_type);
 }
 
 
