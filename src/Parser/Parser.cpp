@@ -420,7 +420,7 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 
 	currContext_->addObj(token.value_, func_type);
 
-	return std::move(std::make_unique<DrawGraphicFunc>(func_type.value_ ,token.value_, std::move(position), std::move(dimension), std::move(color) ));
+	return std::move(std::make_unique<DrawGraphicFunc>(func_type.value_ ,(token.value_), std::move(position), std::move(dimension), std::move(color) ));
 }
 
 StatemPtr Parser::otherGrpahFunParse(Token token, Token var_name, ExprPtr index)

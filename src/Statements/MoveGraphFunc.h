@@ -31,6 +31,8 @@ namespace Guarduaux {
 
             if(graphicObj_)
                 graphicObj_->move(move_vec);
+
+
             return Return();
         }
 

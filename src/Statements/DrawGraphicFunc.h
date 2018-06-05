@@ -15,13 +15,13 @@
 namespace Guarduaux {
     class DrawGraphicFunc : public Statement {
     public:
-        DrawGraphicFunc(std::string obj,
-                        std::string obj_name,
+        DrawGraphicFunc(std::string graph_obj,
+                        std::string obj,
                         std::vector<std::unique_ptr<Expresion> > pos,
                         std::vector<std::unique_ptr<Expresion> >dim,
                         std::vector<std::unique_ptr<Expresion> > col ) {
-            graphicObj_ = obj;
-            objName_ = obj_name;
+            graphicObj_ = graph_obj;
+            objName_ = obj;
             position_ = std::move(pos);
             dimension_ = std::move(dim);
             color_ = std::move(col);
@@ -54,7 +54,6 @@ namespace Guarduaux {
             else {
                 figure = std::make_shared<Cylinder>(pos,col,dim);
             }
-
 
             return Return(objName_, figure);
         }

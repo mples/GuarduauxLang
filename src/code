@@ -3,8 +3,12 @@ func tkom(a) {
 }
 func scene() {
     a=2;
-    tkom(a)~(2);
-    boks draw box pos(0,2,60) col(0,100,0) dim(100,100,100);
+    tkom(a);
+    boks draw box pos(0,2,60) col(0,70,40) dim(10,15,17);
+    boks1 draw box pos(80,2,60) col(0,100,0) dim(30,47,100);
+    boks2 draw box pos(1,50,20) col(0,10,65) dim(30,80,100);
+    boks3 draw box pos(10,2,60) col(100,10,0) dim(15,10,10);
+    boks4 draw box pos(30,32,60) col(0,0,70) dim(20,10,1);
     cyl draw cylinder pos(50,0,1) col(1,1,0) dim(123,43,15);
     boks move (50 ,50,1);
     boks scale(5,1,1);
