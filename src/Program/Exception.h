@@ -17,7 +17,6 @@ namespace Guarduaux {
 		}
 		Exception(const std::string& err_msg) : runtime_error(err_msg) {
 			std::cout << err_msg << std::endl;
-			//TODO improve printing errors
 		}
 	};
 

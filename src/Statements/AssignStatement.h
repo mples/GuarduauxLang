@@ -20,7 +20,7 @@ namespace Guarduaux {
             std::shared_ptr<Variable> var = expr_->calculate();
 			if(varIndex_){
 				if(var->size()){
-					var->get( varIndex_->calculate()->get()) = var->get();
+					var_->get( varIndex_->calculate()->get()) = var->get();
 				}
 				else {
 					throw Exception ("Cannot assign multidimensional variable to single dimensional variable");

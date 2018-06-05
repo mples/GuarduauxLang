@@ -42,10 +42,10 @@ namespace Guarduaux {
                 return funcCall_->run().variable_;
             }
             else if(var_ ){
-                return var_ ;
-            }
-            else if( index_){
-				return std::make_shared<Variable>(var_->get(index_->calculate()->get()));
+            	if(index_){
+					return std::make_shared<Variable>(var_->get(index_->calculate()->get()));
+            	}else
+                	return var_ ;
             }
             else {
             	throw Exception("Variable does not contain a value");
@@ -53,9 +53,6 @@ namespace Guarduaux {
 		}
 
 	private:
-		//std::optional<StatemPtr> funcCall_;
-		//std::optional<Variable*> var_;
-		//std::optional <  ExprPtr > index_ ;
 		StatemPtr funcCall_;
 		std::shared_ptr<Variable> var_ = nullptr;
 		ExprPtr index_ ;

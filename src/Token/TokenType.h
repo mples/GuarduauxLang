@@ -35,7 +35,7 @@ namespace Guarduaux {
 
 		IF, ELSE,
 
-		FOR, FOR_EAC,
+		FOR,
 
 		DRAW, SCALE, MOVE, CHNGCOL,
 		BOX, CYLINDER,

@@ -62,7 +62,7 @@ namespace Guarduaux {
 		}
 
 		bool isValidVar( std::string& var_name){
-			context_->isValidVar(var_name);
+			return context_->isValidVar(var_name);
 		}
 
 		Return run() override{

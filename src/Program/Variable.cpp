@@ -8,6 +8,10 @@ Guarduaux::Variable::Variable() {
 Guarduaux::Variable::Variable(Guarduaux::Token tok) {
 
 }
+Guarduaux::Variable::Variable(int number, int size) {
+    variableList_.resize(size);
+    variableList_.push_back(number);
+}
 
 Guarduaux::Variable::Variable(int number) {
     variableList_.push_back(number);
@@ -290,5 +294,11 @@ bool Guarduaux::Variable::isTrue() {
         return false;
 
 }
+
+void Guarduaux::Variable::resize(int size) {
+    variableList_.resize(size);
+}
+
+
 
 

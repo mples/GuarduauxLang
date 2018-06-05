@@ -181,12 +181,6 @@ TEST_CASE( "parser_tests" ) {
                           "}";
                 REQUIRE_NOTHROW(parser.parse());
             }
-            THEN("works - Contain main function") {
-                stream << "func scene() {"
-                          "for_each kolekcja : iter {}"
-                          "}";
-                REQUIRE_NOTHROW(parser.parse());
-            }
         }
     }
 
@@ -213,6 +207,8 @@ TEST_CASE( "parser_tests" ) {
 
             THEN("works - Contain main function") {
                 stream << "func scene() {"
+                          "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+                          "kula draw box pos(1,5,1) col(1,0,0) dim(1,2,1);"
                           "kula move(1 , 2 , 3);"
                           "boks chngcol(255, 255, 0);"
                           "}";
@@ -225,8 +221,8 @@ TEST_CASE( "parser_tests" ) {
 
             THEN("works - Contain main function") {
                 stream << "func scene() {"
-                          "kula move(1 , 2 , 3);"
                           "boks draw box pos(1,2,1) col(1,0,0) dim(1,1,1);"
+
                           "}";
 
                 REQUIRE_NOTHROW(parser.parse());

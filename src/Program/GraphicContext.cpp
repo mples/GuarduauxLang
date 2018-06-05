@@ -19,10 +19,9 @@ Guarduaux::GraphicContext::GraphicContext(const Guarduaux::GraphicContext &&othe
 }
 
 void Guarduaux::GraphicContext::updateObj(std::string &obj_name, std::shared_ptr<Guarduaux::GraphicObject> obj) {
-    //graphObjects_.insert_or_assign(obj_name,obj);
 
     if(graphObjects_.find(obj_name) != graphObjects_.end()){
-        (graphObjects_.at(obj_name) ) = std::move(obj);
+        (graphObjects_[(obj_name)] ).swap(obj);
     }
 
 }

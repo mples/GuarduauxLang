@@ -14,7 +14,7 @@ Context::Context(std::vector<std::string> &params ){
     for(auto& par : params){
         addVar(par);
     }
-    graphicContext_ = std::make_shared<GraphicContext>(); //TODO FIX
+    graphicContext_ = std::make_shared<GraphicContext>();
 }
 
 Context::Context(const Context &&other)noexcept {
@@ -32,7 +32,10 @@ void Context::addVar(std::string &var_name) {
 }
 
 void Context::addVar(std::string &var_name, ExprPtr index) {
-    variables_.insert(std::make_pair(var_name, std::make_shared<Variable>())   );
+    std::shared_ptr<Variable> var = std::make_shared<Variable>();
+    if(index)
+        var->resize(index->calculate()->get());
+    variables_.insert(std::make_pair(var_name, var)   );
 }
 
 std::shared_ptr<Variable> Context::findVar(std::string var_name) {
@@ -56,7 +59,6 @@ void Context::updateVars(std::unordered_map<std::string, std::shared_ptr<Variabl
     for( const auto & p : params){
         std::shared_ptr<Variable> var = findVar(p.first);
         *var = *p.second;
-        //variables_.insert_or_assign(p.first, p.second);
     }
 }
 
@@ -74,7 +76,7 @@ std::shared_ptr<GraphicContext> Context::getGraphicContext_(){
 }
 
 std::shared_ptr<GraphicObject> Context::findObj(std::string var_name) {
-    graphicContext_->findObj(var_name);
+    return graphicContext_->findObj(var_name);
 }
 
 

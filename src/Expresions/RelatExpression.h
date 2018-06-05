@@ -57,7 +57,7 @@ namespace Guarduaux {
 		}
 
 	private:
-		std::list<ExprPtr> simpleLogicExprList_;
-		std::list<TokenType> relationOperatorsList_;
+		std::vector<ExprPtr> simpleLogicExprList_;
+		std::vector<TokenType> relationOperatorsList_;
 	};
 }

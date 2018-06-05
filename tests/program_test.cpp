@@ -23,7 +23,7 @@ TEST_CASE( "function_tests" ) {
             THEN("Exception appears") {
                 stream << "func sceneee(){}";
                 Program progr = parser.parse();
-                REQUIRE_THROWS(progr.run());
+                REQUIRE_THROWS(progr.generateScene());
             }
 
         }
@@ -34,7 +34,7 @@ TEST_CASE( "function_tests" ) {
             THEN("works - Contain scene function") {
                 stream << "func scene() {}";
                 Program progr = parser.parse();
-                REQUIRE_NOTHROW(progr.run());
+                REQUIRE_NOTHROW(progr.generateScene());
             }
         }
 
@@ -44,7 +44,7 @@ TEST_CASE( "function_tests" ) {
                 stream << "func tkom() {}"
                           "func scene() {}";
                 Program progr = parser.parse();
-                REQUIRE_NOTHROW(progr.run());
+                REQUIRE_NOTHROW(progr.generateScene());
             }
         }
 
@@ -303,7 +303,24 @@ TEST_CASE( "function_tests" ) {
                 REQUIRE(progr.isVaildFunc("tkom"));
                 Return result = progr.generateScene();
                 REQUIRE(result.variable_->get() == 2 );
-                progr.render();
+                //progr.render();
+            }
+        }
+
+        WHEN("Program contains if function") {
+
+            THEN("func is found") {
+                stream << "func tkom() {}"
+                          "func scene() {"
+                          "b;"
+                          "a[10];"
+                          "a[2] = 3;"
+                          "b = a[2];"
+                          "return b;"
+                          "}";
+                Program progr = parser.parse();
+                REQUIRE(progr.isVaildFunc("tkom"));
+                REQUIRE(progr.generateScene().variable_->get() == 3 );
             }
         }
 

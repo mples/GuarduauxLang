@@ -17,19 +17,9 @@ namespace Guarduaux {
 		FuncDef( std::string &identi,  std::vector<std::string> &param, BlockPtr func) : identifier_(identi),
                                                                                          parameters_(param){
 		    funcBlock_ = std::move(func);
-		    for(const auto & p : param){
-		    	//TODO
-				//funcBlock_->addVar(p);
-		    }
 		}
-		FuncDef(const FuncDef&) {
 
-		};
-		FuncDef &operator = (const FuncDef&) {
-
-		}
 		~FuncDef() = default;
-
 
 		const std::string& getId() const{
 			return identifier_;

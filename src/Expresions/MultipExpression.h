@@ -22,8 +22,8 @@ namespace Guarduaux {
 		void addSimpleAssignExpr(ExprPtr simple_expr, TokenType ret_op );
 
 	private:
-		std::list<ExprPtr> multipExprVec_;
-		std::list<TokenType> addativOperatorVec_;
+		std::vector<ExprPtr> multipExprVec_;
+		std::vector<TokenType> addativOperatorVec_;
 	};
 
 }

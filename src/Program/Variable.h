@@ -16,11 +16,12 @@ namespace Guarduaux {
 		Variable(Token tok);
 		Variable(int number);
 
+		Variable(int number, int size);
+
 		Variable(const Variable&) = default;
 
 		Variable(const std::vector<int> &var_list);
 
-		//Variable& operator=(const Variable& other);
 
         Variable& operator*(const Variable &other) const;
         Variable& operator/(const Variable &other) const;
@@ -59,6 +60,8 @@ namespace Guarduaux {
 		std::shared_ptr<Variable> or_op(std::shared_ptr<Variable> other);
 		bool isTrue();
 
+		void resize(int size);
+
 
         operator bool() const;
 
@@ -67,6 +70,7 @@ namespace Guarduaux {
 
 	private:
 		std::vector<int> variableList_;
+
 	};
 }
 

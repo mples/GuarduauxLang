@@ -9,9 +9,6 @@
 #include "Statements/Statement.h"
 #include "Program/Context.h"
 
-
-
-
 namespace Guarduaux {
 
 	using StatemPtr = std::unique_ptr<Statement>;

@@ -122,7 +122,6 @@ void Guarduaux::Lexer::tryKeyword() {
 			{"if", TokenType::IF },
 			{ "else", TokenType::ELSE },
 			{"for", TokenType::FOR },
-			{"for_each", TokenType::FOR_EAC },
 			{"draw", TokenType::DRAW },
 			{"scale", TokenType::SCALE },
 			{"move", TokenType::MOVE },

@@ -41,7 +41,7 @@ namespace Guarduaux {
 		}
 
 	private:
-		std::list<ExprPtr> multipExprList_;
-		std::list<TokenType> addativOperatorList_;
+		std::vector<ExprPtr> multipExprList_;
+		std::vector<TokenType> addativOperatorList_;
 	};
 }

@@ -41,7 +41,6 @@ const  std::string Guarduaux::TokenTypeTable::getName(const TokenType & type)
 		{ TokenType::ELSE,		"Else keyword" },
 
 		{ TokenType::FOR,		"For keyword" },
-		{ TokenType::FOR_EAC,	"for_each keyword" },
 
 		{ TokenType::DRAW,		"draw keyword" },
 		{ TokenType::SCALE,		"scale keyword" },

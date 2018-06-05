@@ -16,11 +16,9 @@ add_executable(Guarduaux_Lang
         src/Statements/BlockStatement.h
         src/Program/Exception.h
         src/Expresions/Expresion.h
-        src/Statements/ForEachStatement.h
         src/Statements/ForStatement.h
         src/Statements/FuncCall.h
         src/Program/FuncDef.h
-        src/Statements/GraphFunc.h
         src/Statements/IfStatement.h
         src/Lexer/Input.cpp
         src/Lexer/Input.h
@@ -47,9 +45,22 @@ add_executable(Guarduaux_Lang
         src/Program/Variable.h
         #tests/program_test.cpp
         src/Program/Context.h
-        #tests/expressions_test.cpp
         src/Expresions/MultipExpression.cpp
-        src/Program/Context.cpp src/Statements/DrawGraphicFunc.h src/Statements/ScaleGraphFunc.h src/Statements/MoveGraphFunc.h src/Statements/ChngcolGraphFunc.h src/Program/GraphicContext.cpp src/Program/GraphicContext.h src/Graphic/GraphicObject.h src/Graphic/Box.cpp src/Graphic/Box.h src/Graphic/Cylinder.cpp src/Graphic/Cylinder.h src/Program/Program.cpp src/Graphic/Shader.cpp src/Graphic/Shader.h)
+        src/Program/Context.cpp
+        src/Statements/DrawGraphicFunc.h
+        src/Statements/ScaleGraphFunc.h
+        src/Statements/MoveGraphFunc.h
+        src/Statements/ChngcolGraphFunc.h
+        src/Program/GraphicContext.cpp
+        src/Program/GraphicContext.h
+        src/Graphic/GraphicObject.h
+        src/Graphic/Box.cpp
+        src/Graphic/Box.h
+        src/Graphic/Cylinder.cpp
+        src/Graphic/Cylinder.h
+        src/Program/Program.cpp
+        src/Graphic/Shader.cpp
+        src/Graphic/Shader.h)
 
 
 # Source files

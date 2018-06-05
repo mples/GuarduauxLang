@@ -14,7 +14,6 @@
 #include "Statements/IfStatement.h"
 #include "Statements/AssignStatement.h"
 #include "Statements/ForStatement.h"
-#include "Statements/ForEachStatement.h"
 #include "Statements/PeriodicFuncCall.h"
 #include "Expresions/LogicExpression.h"
 #include "Expresions/AndExpression.h"
@@ -23,7 +22,6 @@
 #include "Expresions/AssignableExpression.h"
 #include "Expresions/SimpleAssnblExpression.h"
 #include "Expresions/MultipExpression.h"
-#include "Statements/GraphFunc.h"
 #include "Statements/ReturnStatement.h"
 #include "Statements/DrawGraphicFunc.h"
 #include "Statements/ScaleGraphFunc.h"
@@ -145,7 +143,11 @@ BlockPtr Parser::blockStateParse()
 
 	 std::unordered_map<TokenType, std::function<void()> > statements_list = {
 		{TokenType::IDENTIFIER,		[&]() {
-			curr_block->addInstr(std::move(funcCallOrAssinStatemOrInitStatemParse(pars_tok) ) );
+			StatemPtr inst = funcCallOrAssinStatemOrInitStatemParse(pars_tok);
+			if(inst){
+				curr_block->addInstr(std::move(inst ) );
+
+			}
 				isAcceptableOrThrow(Type::SEMICOLON);
 			} 
 		},
@@ -157,9 +159,6 @@ BlockPtr Parser::blockStateParse()
 		{ TokenType::FOR,		[&]() {
 			curr_block->addInstr(std::move(loopStatemParse(pars_tok)));
 		}
-		},
-		{ TokenType::FOR_EAC,		[&]() {
-			curr_block->addInstr(std::move(loopStatemParse(pars_tok))); }
 		},
 		{ TokenType::RET,		[&]() {
 		    curr_block->addInstr(std::move(returnStatemParse()));
@@ -176,7 +175,7 @@ BlockPtr Parser::blockStateParse()
 			statements_list.at(pars_tok.type_)();
 		}
 		else {
-			throw WrongTokenException(pars_tok, { Type::IDENTIFIER, Type::IF, Type::FOR, Type::FOR_EAC, Type::RET });
+			throw WrongTokenException(pars_tok, { Type::IDENTIFIER, Type::IF, Type::FOR, Type::RET });
 		}
 	}
 
@@ -268,69 +267,34 @@ StatemPtr Parser::loopStatemParse(Token loop_token)
 	StatemPtr loop_instr;
 	BlockPtr loop_block;
 
-	if (loop_token.type_ == Type::FOR) {
-		isAcceptableOrThrow(Type::RND_BR_OP);
+	isAcceptableOrThrow(Type::RND_BR_OP);
 
-		if(isAcceptable(Type::IDENTIFIER, [&]() {
-			tok = lexer_->currentToken();
-		} )  ){
-			init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
-		}
-		else {
-			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
-		}
-		isAcceptableOrThrow(Type::SEMICOLON);
-		logic_expr = std::move( logicExprParse() );
-
-		isAcceptableOrThrow(Type::SEMICOLON);
-
-		if(isAcceptable(Type::IDENTIFIER, [&]() {
-            tok = lexer_->currentToken();
-        } )  ){
-			loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
-		}
-		else {
-			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
-		}
-		isAcceptableOrThrow(Type::RND_BR_CL);
-
-		loop_block = std::move(blockStateParse());
-
-		std::unique_ptr<ForStatement> for_statem = std::make_unique<ForStatement>(std::move(logic_expr),std::move(loop_block), std::move(init_instr), std::move(loop_instr));
-		return std::move(for_statem);
+	if(isAcceptable(Type::IDENTIFIER, [&]() {
+		tok = lexer_->currentToken();
+	} )  ){
+		init_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
 	}
-	else if (loop_token.type_ == Type::FOR_EAC) {
-		std::string coll;
-		std::string iter;
-
-		//isAcceptableOrThrow(Type::IDENTIFIER, [&]() { coll = lexer_->getToken().value_; });
-
-		if(isAcceptable(Type::IDENTIFIER) ) {
-			coll = lexer_->currentToken().value_;
-		}
-		else {
-			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
-		}
-
-		isAcceptableOrThrow(Type::COLON);
-
-		//isAcceptableOrThrow(Type::IDENTIFIER, [&]() { iter = lexer_->getToken().value_; });
-
-		if(isAcceptable(Type::IDENTIFIER) ) {
-			iter = lexer_->currentToken().value_;
-		}
-		else {
-			throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
-		}
-
-		loop_block = std::move(blockStateParse());
-
-
-
-		std::unique_ptr<ForEachStatement> for_each_statem = std::make_unique<ForEachStatement>(coll, iter, std::move(loop_block));
-		return std::move(for_each_statem);
+	else {
+		throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
 	}
+	isAcceptableOrThrow(Type::SEMICOLON);
+	logic_expr = std::move( logicExprParse() );
 
+	isAcceptableOrThrow(Type::SEMICOLON);
+
+	if(isAcceptable(Type::IDENTIFIER, [&]() {
+       tok = lexer_->currentToken();
+    } )  ){
+		loop_instr = std::move(funcCallOrAssinStatemOrInitStatemParse(tok));
+	}
+	else {
+		throw WrongTokenException(lexer_->currentToken(), {Type::IDENTIFIER});
+	}
+	isAcceptableOrThrow(Type::RND_BR_CL);
+
+	loop_block = std::move(blockStateParse());
+	std::unique_ptr<ForStatement> for_statem = std::make_unique<ForStatement>(std::move(logic_expr),std::move(loop_block), std::move(init_instr), std::move(loop_instr));
+	return std::move(for_statem);
 }
 
 StatemPtr Parser::assignOrGraphicStatemParse(Token token)
@@ -461,7 +425,6 @@ StatemPtr Parser::drawFuncParse(Token token, ExprPtr index)
 
 StatemPtr Parser::otherGrpahFunParse(Token token, Token var_name, ExprPtr index)
 {
-	std::unique_ptr<GraphFunc> graph_func;
 	if(token.type_ == Type::SCALE){
 		return std::move(scaleFuncParse(var_name, std::move(index) ));
 	}
@@ -513,7 +476,6 @@ StatemPtr Parser::moveFuncParse(Token var_name, ExprPtr index) {
 	coord.push_back(std::move(logicExprParse()));
 
 	isAcceptableOrThrow(Type::RND_BR_CL);
-	std::shared_ptr<GraphicObject> obj = currContext_->findObj(var_name.value_);
 	return std::move(std::make_unique<MoveGraphicFunc>(currContext_->findObj(var_name.value_) , std::move(coord)));
 }
 

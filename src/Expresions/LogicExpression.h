@@ -33,6 +33,6 @@ namespace Guarduaux {
 		}
 
 	private:
-		std::list<ExprPtr> andExprList_;
+		std::vector<ExprPtr> andExprList_;
 	};
 }
